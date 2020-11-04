@@ -1,13 +1,13 @@
 #!/usr/bin/env nextflow
 
-params.fastq = "mdes-ligneris@pedago-ngs:~/M1/S1/Projet1/data/B2998_10_S6_R1_001.fastq"
+params.fastq = "/data/home/mdes-ligneris/M1/S1/Projet1/data/B2998_10_S6_R1_001.fastq"
 
 params.outdir = 'results'
 
 log.info "fastq files : ${params.fastq}"
 
 Channel
-  .fromPath( params.fastq )
+  .fromFilePairs( params.fastq,size:1 )
   .ifEmpty { error "Cannot find any fastq files matching: ${params.fastq}" }
   .set { fastq_files }
 
@@ -24,6 +24,7 @@ process Fastqc {
 
         script:
         """
-        fastqc --threads ${reads} --format fastq --outdir ./
+        fastqc ${reads} --format fastq --outdir ./
+
         """
 }
