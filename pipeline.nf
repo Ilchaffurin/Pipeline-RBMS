@@ -8,7 +8,7 @@ def helpMessage() {
       nextflow run pipeline.nf --fasta <fasta files> 
 
     Required arguments:
-      --fastq           Directory pattern for fastq files
+      --input_dir      Directory pattern for fastq files
 
     Save option:
       --outdir          Specify where to save the output from the nextflow run (default: "./results/")
@@ -24,7 +24,7 @@ def helpMessage() {
 ///////////////////////////////////////////////////////////////////////////////
 
 params.help = false
-params.fastq = false
+params.input_dir = false
 params.outdir = 'results'
 
 // Show help message
@@ -34,33 +34,28 @@ if (params.help) {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/* --                       HEADER LOG INFO                               -- */
+/* --                          HEADER LOG INFO                            -- */
 ///////////////////////////////////////////////////////////////////////////////
 
-//log.info "fastq files    : ${params.fastq}"
-
-def summary = [:]
-summary['Fastq files']              = params.fastq ? params.fastq : 'Not supplied'
-log.info summary.collect { k,v -> "${k.padRight(20)}: $v" }.join("\n")
+log.info "fastq files    : ${params.input_dir}"
 
 ///////////////////////////////////////////////////////////////////////////////
-/* --                           VALIDATE INPUTS                           -- */
+/* --                          VALIDATE INPUTS                            -- */
 ///////////////////////////////////////////////////////////////////////////////
 
-//params.fastq = "/data/home/mdes-ligneris/M1/S1/Projet1/data/B2998_10_S6_R1_001.fastq"
-
-if (params.fastq){
+if (params.input_dir){
     Channel
-        .fromFilePairs( params.fastq,size:1 )
-        .ifEmpty { error "Cannot find any fastq files matching: ${params.fastq}" }
-        .into { fastqc_files;fastq_files_for_report }
+        .fromFilePairs( params.input_dir , size:1 )
+        .ifEmpty { error "Cannot find any fastq files matching: ${params.input_dir}" }
+        .into { fastqc_files_2trim ; fastq_files_2QC }
 }
-else { exit 1,
-    log.warn "=================================================================\nWARNING! No fastq files precised.\nUse '--fastq' \nOr '--help' for more informations"
+else { 
+    log.info "No fastq files precised.\nUse '--fastq' \nOr '--help' for more informations"
+    exit 1
 }
 
 ///////////////////////////////////////////////////////////////////////////////
-/* --                       READS QUALITY CONTROLE                        -- */
+/* --                     FIRST READS QUALITY CONTROLE                    -- */
 ///////////////////////////////////////////////////////////////////////////////
 
 process Fastqc {
@@ -69,7 +64,7 @@ process Fastqc {
         publishDir "${params.outdir}/fastq/QC/", mode: 'copy'
           
         input:
-        set file_id, file(reads) from fastq_files_for_report
+        set file_id, file(reads) from fastq_files_2QC
 
         output:
         file "*.{zip,html}" into fastqc_report
@@ -80,7 +75,24 @@ process Fastqc {
         """
 }
 
- ///////////////////////////////////////////////////////////////////////////////
- /* --                       TRIMMING / CLEANING READS                     -- */
- ///////////////////////////////////////////////////////////////////////////////
+///////////////////////////////////////////////////////////////////////////////
+/* --                       TRIMMING / CLEANING READS                     -- */
+///////////////////////////////////////////////////////////////////////////////
+
+process Trimmomatic {
+    label "trimmomatic"
+        tag "$file_id"
+        publishDir "${params.outdir}/fastq/trim/", mode: 'copy'
+          
+        input:
+        set file_id, file(reads) from fastqc_files_2trim
+
+        output:
+        set file_id, "*.fastq" into fastq_trim_files, fastq_trim_files_2QC
+
+        script:
+        """
+        trimmomatic SE -phred33 ${reads} ${file_id}_trim ILLUMINACLIP:trimmomatic-0.39/adapters/TruSeq3-SE.fa:2:30:7 LEADING:30 TRAILING:30 SLIDINGWINDOW:4:15 AVGQUAL:30 MINLEN:8
+        """
+}
 
