@@ -63,7 +63,7 @@ if (params.index){
     Channel
         .fromFilePairs( params.index , size:1 )
         .ifEmpty { error "Cannot find any index files matching: ${params.index}" }
-        .set { fasta_2indexing }
+        .into { fasta_2indexing ; fasta_2variantCalling }
 }
 else { 
     log.info "No index file precised.\nUse '--index' \nOr '--help' for more informations"
@@ -135,6 +135,10 @@ process Index_STAR {
         """
 }
 
+///////////////////////////////////////////////////////////////////////////////
+/* --                              MAPPING                                -- */
+///////////////////////////////////////////////////////////////////////////////
+
 process STAR {
     label "star"
         tag "$file_id"
@@ -156,5 +160,29 @@ process STAR {
         --readFilesIn ${reads} \
         --outFileNamePrefix ./${file_id} \
         --outSAMtype BAM SortedByCoordinate
+        """
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/* --                         VARIANT CALLING                             -- */
+///////////////////////////////////////////////////////////////////////////////
+
+process Bcftools {
+    label "bcftools"
+        tag "$file_id"
+        publishDir "${params.outdir}/bcftools/$file_id", mode: 'copy'
+          
+        input:
+        set file_id, file(reads) from bam_file
+	set file_id2, file(fasta) from fasta_2variantCalling
+
+        output:
+        set file_id, "*" into variant_calling_file
+
+        script:
+        """
+        bcftools mpileup -f $fasta $reads | bcftools call -mv -Ob -o calls.vcf
+	bcftools view -i '%QUAL>=20' calls.vcf > calls_view.vcf
+ 
         """
 }
