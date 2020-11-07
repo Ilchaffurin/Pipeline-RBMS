@@ -92,7 +92,6 @@ process Trimmomatic {
 
         script:
         """
-        trimmomatic SE -phred33 ${reads} ${file_id}_trim ILLUMINACLIP:trimmomatic-0.39/adapters/TruSeq3-SE.fa:2:30:7 LEADING:30 TRAILING:30 SLIDINGWINDOW:4:15 AVGQUAL:30 MINLEN:8
+        trimmomatic SE -phred33 ${reads} ${file_id}_trim.fastq ILLUMINACLIP:~/miniconda2/envs/EnvPipeline/share/trimmomatic-0.39-1/adapters/TruSeq3-SE.fa:2:30:7 LEADING:30 TRAILING:30 SLIDINGWINDOW:4:15 AVGQUAL:30 MINLEN:8
         """
 }
-

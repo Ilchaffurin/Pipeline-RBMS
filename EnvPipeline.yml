@@ -1,4 +1,4 @@
-name: EnvPipeline.yml
+name: EnvPipeline
 channels:
   - bioconda
   - defaults
@@ -87,3 +87,4 @@ dependencies:
   - pip:
     - multiqc==1.0.dev0
 prefix: /data/home/ichaffurin/miniconda2/envs/EnvPipeline
+
