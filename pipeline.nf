@@ -63,7 +63,7 @@ if (params.index){
     Channel
         .fromFilePairs( params.index , size:1 )
         .ifEmpty { error "Cannot find any index files matching: ${params.index}" }
-        .into { fasta_2indexing ; fasta_2variantCalling }
+        .into { fasta_2indexing_STAR ; fasta_2indexing_BOWTIE; fasta_2variantCalling }
 }
 else { 
     log.info "No index file precised.\nUse '--index' \nOr '--help' for more informations"
@@ -83,7 +83,7 @@ process Trimmomatic {
         set file_id, file(reads) from fastqc_files_2trim
 
         output:
-        set file_id, "*.fastq" into fastq_trim_files, fastq_trim_files_2QC
+        set file_id, "*.fastq" into fastq_trim_files, fastq_trim_files2, fastq_trim_files_2QC
 
         script:
         """
@@ -123,17 +123,38 @@ process Index_STAR {
         publishDir "${params.outdir}/mapping/STAR/index/", mode: 'copy'
           
         input:
-        set file_id, file(reads) from fasta_2indexing
+        set file_id, file(fasta) from fasta_2indexing_STAR
 
         output:
-        file "*" into index_files
+        file "*" into index_files_STAR
 
         script:
         """
-        STAR --runThreadN 10 --runMode genomeGenerate --genomeDir ./index/ --genomeFastaFiles ${reads} 
-
+        STAR --runThreadN 10 \
+        --runMode genomeGenerate \
+        --genomeDir ./index/ \
+        --genomeFastaFiles ${fasta} 
         """
 }
+
+process Index_BOWTIE {
+    label "index_bowtie2"
+        tag "$file_id"
+        publishDir "${params.outdir}/mapping/BOWTIE2/index/", mode: 'copy'
+          
+        input:
+        set file_id, file(fasta) from fasta_2indexing_BOWTIE
+
+        output:
+        file "*.index*" into index_files_BOWTIE
+	file "*_report.txt" into indexing_report
+
+        script:
+        """
+        bowtie2-build ${fasta} ${file_id}.index &> ${fasta.baseName}_bowtie2_report.txt
+        """
+}
+
 
 ///////////////////////////////////////////////////////////////////////////////
 /* --                              MAPPING                                -- */
@@ -146,20 +167,53 @@ process STAR {
           
         input:
         set file_id, file(reads) from fastq_trim_files
-	file index from index_files.collect()
+	      file index from index_files_STAR.collect()
 
         output:
-        set file_id, "*out.bam" into bam_file
-        file "*" into star_report
+        set file_id, val(data_type), "*out.bam" into star_bam_files
+        file "*" into star_mapping_report
 
         script:
+        data_type="_star_"
         """
         STAR --runThreadN 10 \
         --runMode alignReads \
         --genomeDir ./index/ \
         --readFilesIn ${reads} \
-        --outFileNamePrefix ./${file_id} \
+        --outFileNamePrefix ./${file_id}_sam \
         --outSAMtype BAM SortedByCoordinate
+        """
+}
+
+process Bowtie2 {
+    label "bowtie2"
+        tag "$file_id"
+        publishDir "${params.outdir}/mapping/BOWTIE2/$file_id", mode: 'copy'
+          
+        input:
+        set file_id, file(reads) from fastq_trim_files2
+	      file index from index_files_BOWTIE.collect()
+
+        output:
+        set file_id, val(data_type), "*.bam" into bowtie2_bam_files
+        file "*" into bowtie2_mapping_report
+
+        script:
+        data_type="_bowtie2_"
+        index_id = index[0]
+        for (index_file in index) {
+          if (index_file =~ /.*\.1\.bt2/ && !(index_file =~ /.*\.rev\.1\.bt2/)) {
+            index_id = ( index_file =~ /(.*)\.1\.bt2/)[0][1]
+          }
+        }
+        """
+        bowtie2 -p 20 \
+        --very-sensitive \
+        -x ${index_id} \
+        -U ${reads} \
+        -S ${file_id}_bowtie2.sam 
+        samtools view -bS ${file_id}_bowtie2.sam > ${file_id}_bowtie2.bam
+        samtools sort -@ 20 -O BAM -o ${file_id}_bowtie2_sorted.bam ${file_id}_bowtie2.bam
         """
 }
 
@@ -171,18 +225,18 @@ process Bcftools {
     label "bcftools"
         tag "$file_id"
         publishDir "${params.outdir}/bcftools/$file_id", mode: 'copy'
-          
-        input:
-        set file_id, file(reads) from bam_file
-	set file_id2, file(fasta) from fasta_2variantCalling
 
+        input:
+        set file_id, data_type, file(reads) from star_bam_files
+        set file_id, data_type, file(reads) from bowtie2_bam_files
+	set file_id3, file(fasta) from fasta_2variantCalling
+        
         output:
         set file_id, "*" into variant_calling_file
 
         script:
         """
-        bcftools mpileup -f $fasta $reads | bcftools call -mv -Ob -o calls.vcf
-	bcftools view -i '%QUAL>=20' calls.vcf > calls_view.vcf
- 
-        """
+        bcftools mpileup -f $fasta $reads | bcftools call -mv -Ob -o ${file_id}${data_type}calls.vcf
+	bcftools view -i '%QUAL>=20' ${file_id}${data_type}calls.vcf > ${file_id}${data_type}calls_view.vcf
+        """     
 }
