@@ -83,7 +83,7 @@ process Trimmomatic {
         set file_id, file(reads) from fastqc_files_2trim
 
         output:
-        set file_id, "*.fastq" into fastq_trim_files, fastq_trim_files2, fastq_trim_files_2QC
+        set file_id, "*.fastq" into fastq_trim_files, fastq_trim_files2, fastq_trim_files_2QC, trimming_report
 
         script:
         """
@@ -95,14 +95,17 @@ process Trimmomatic {
 /* --                         READS QUALITY CONTROLE                      -- */
 ///////////////////////////////////////////////////////////////////////////////
 
+fastq_files_2QC
+        .concat(fastq_trim_files_2QC)
+        .set { fastq_files }
+
 process Fastqc {
     label "fastqc"
         tag "$file_id"
         publishDir "${params.outdir}/fastq/QC/", mode: 'copy'
           
         input:
-        set file_id, file(reads) from fastq_files_2QC
-        set file_id, file(reads) from fastq_trim_files_2QC
+        set file_id, file(reads) from fastq_files
 
         output:
         file "*.{zip,html}" into fastqc_report
@@ -130,7 +133,7 @@ process Index_STAR {
 
         script:
         """
-        STAR --runThreadN 10 \
+        STAR --runThreadN 20 \
         --runMode genomeGenerate \
         --genomeDir ./index/ \
         --genomeFastaFiles ${fasta} 
@@ -147,7 +150,7 @@ process Index_BOWTIE {
 
         output:
         file "*.index*" into index_files_BOWTIE
-	file "*_report.txt" into indexing_report
+	      file "*_report.txt" into indexing_report
 
         script:
         """
@@ -160,7 +163,7 @@ process Index_BOWTIE {
 /* --                              MAPPING                                -- */
 ///////////////////////////////////////////////////////////////////////////////
 
-process STAR {
+process Star {
     label "star"
         tag "$file_id"
         publishDir "${params.outdir}/mapping/STAR/$file_id", mode: 'copy'
@@ -176,11 +179,11 @@ process STAR {
         script:
         data_type="_star_"
         """
-        STAR --runThreadN 10 \
+        STAR --runThreadN 20 \
         --runMode alignReads \
         --genomeDir ./index/ \
         --readFilesIn ${reads} \
-        --outFileNamePrefix ./${file_id}_sam \
+        --outFileNamePrefix ./${file_id} \
         --outSAMtype BAM SortedByCoordinate
         """
 }
@@ -195,7 +198,7 @@ process Bowtie2 {
 	      file index from index_files_BOWTIE.collect()
 
         output:
-        set file_id, val(data_type), "*.bam" into bowtie2_bam_files
+        set file_id, val(data_type), "*_sorted.bam" into bowtie2_bam_files
         file "*" into bowtie2_mapping_report
 
         script:
@@ -221,22 +224,27 @@ process Bowtie2 {
 /* --                         VARIANT CALLING                             -- */
 ///////////////////////////////////////////////////////////////////////////////
 
+///////////////////////////////////////////////////////////////////////////////
+/* --                         VARIANT CALLING                             -- */
+///////////////////////////////////////////////////////////////////////////////
+
+star_bam_files.concat(bowtie2_bam_files).set { bam_files }
+  
 process Bcftools {
     label "bcftools"
         tag "$file_id"
         publishDir "${params.outdir}/bcftools/$file_id", mode: 'copy'
 
         input:
-        set file_id, data_type, file(reads) from star_bam_files
-        set file_id, data_type, file(reads) from bowtie2_bam_files
-	set file_id3, file(fasta) from fasta_2variantCalling
+        set fasta_id, file(fasta) from fasta_2variantCalling
+        set file_id, data_type, file(reads) from bam_files
         
         output:
-        set file_id, "*" into variant_calling_file
+        set file_id, data_type, "${file_id}${data_type}{calls.vcf,calls_view.vcf}" into variant_calling_file
 
         script:
         """
-        bcftools mpileup -f $fasta $reads | bcftools call -mv -Ob -o ${file_id}${data_type}calls.vcf
-	bcftools view -i '%QUAL>=20' ${file_id}${data_type}calls.vcf > ${file_id}${data_type}calls_view.vcf
-        """     
+        bcftools mpileup -f $fasta $reads | bcftools call -mv -Ob -o ${file_id}${data_type}calls.vcf 
+        bcftools view -i '%QUAL>=20' ${file_id}${data_type}calls.vcf > ${file_id}${data_type}calls_view.vcf
+        """
 }
