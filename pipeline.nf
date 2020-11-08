@@ -224,27 +224,50 @@ process Bowtie2 {
 /* --                         VARIANT CALLING                             -- */
 ///////////////////////////////////////////////////////////////////////////////
 
-///////////////////////////////////////////////////////////////////////////////
-/* --                         VARIANT CALLING                             -- */
-///////////////////////////////////////////////////////////////////////////////
-
-star_bam_files.concat(bowtie2_bam_files).set { bam_files }
-  
 process Bcftools {
     label "bcftools"
         tag "$file_id"
         publishDir "${params.outdir}/bcftools/$file_id", mode: 'copy'
 
         input:
-        set fasta_id, file(fasta) from fasta_2variantCalling
-        set file_id, data_type, file(reads) from bam_files
+        set file_id, data_type, file(reads) from star_bam_files
+        set file_id2, data_type2, file(reads2) from bowtie2_bam_files
+	      set file_id3, file(fasta) from fasta_2variantCalling
         
         output:
-        set file_id, data_type, "${file_id}${data_type}{calls.vcf,calls_view.vcf}" into variant_calling_file
+        set file_id, "*" into variant_calling_file
 
         script:
         """
-        bcftools mpileup -f $fasta $reads | bcftools call -mv -Ob -o ${file_id}${data_type}calls.vcf 
-        bcftools view -i '%QUAL>=20' ${file_id}${data_type}calls.vcf > ${file_id}${data_type}calls_view.vcf
-        """
+        bcftools mpileup -f $fasta $reads | bcftools call -mv -Ob -o ${file_id}${data_type}calls.vcf
+        bcftools mpileup -f $fasta $reads2 | bcftools call -mv -Ob -o ${file_id2}${data_type2}calls.vcf
+
+	      bcftools view -i '%QUAL>=20' ${file_id}${data_type}calls.vcf > ${file_id}${data_type}calls_view.vcf
+        bcftools view -i '%QUAL>=20' ${file_id2}${data_type2}calls.vcf > ${file_id2}${data_type2}calls_view.vcf
+
+        """     
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/* --                      MERGE ALL STEPS REPORTS                        -- */
+///////////////////////////////////////////////////////////////////////////////
+
+process MultiQC {
+    label "multiQC"
+      publishDir "${params.outdir}/multiQC", mode: 'copy'
+
+      input:
+      file report_fastqc from fastqc_report.collect().ifEmpty([])
+      file report_trim from trimming_report.collect().ifEmpty([])
+      file report_star from star_mapping_report.collect().ifEmpty([])
+      file report_mapping from bowtie2_mapping_report.collect()
+
+      output:
+      file "*multiqc_*" into multiqc_report
+
+      script:
+      """
+      multiqc -f . \\
+      -m fastqc -m trimmomatic -m star -m bowtie2
+      """
 }
