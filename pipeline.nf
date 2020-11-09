@@ -35,7 +35,7 @@ def helpMessage() {
 ///////////////////////////////////////////////////////////////////////////////
 
 params.help = false
-params.input_dir=['/data/home/mdes-ligneris/M1/S1/Projet1/data/B2998_10_S6_R1_001.fastq', '/data/home/mdes-ligneris/M1/S1/Projet1/data/B2998_6_S5_R1_001.fastq']
+params.input_dir = false
 params.index = false
 params.skipFastqc = false
 params.skipMultiqc = false
@@ -48,8 +48,6 @@ if (params.help) {
     helpMessage()
     exit 0
 }
-
-
 
 ///////////////////////////////////////////////////////////////////////////////
 /* --                          HEADER LOG INFO                            -- */
@@ -87,15 +85,25 @@ log. info "---------------------------------------------------------------------
 ///////////////////////////////////////////////////////////////////////////////
 
 if (params.input_dir){
-    Channel
-        .fromFilePairs(params.input_dir, size:1)
+	Channel
+        .fromPath(params.input_dir)
         .ifEmpty { error "Cannot find any fastq files matching: ${params.input_dir}" }
-        .into { fastqc_files_2trim ; fastq_files_2QC }
+        .toList()
+        .into { input ; input_2view }
+        
 }
 else { 
     log.info "No fastq files precised.\nUse '--input_dir' \nOr '--help' for more informations"
     exit 1
 }
+
+input_2view.view()
+
+Channel
+        .fromFilePairs(params.input_dir, size:1)
+        .into { fastqc_files_2trim ; fastq_files_2QC ; fastq_files_2view }
+
+fastq_files_2view.view()
 
 if (params.index){
     Channel
@@ -318,35 +326,13 @@ process Bcftools {
         set file_id, data_type, file(reads) from bam_files
         
         output:
-        set file_id, data_type, "${file_id}${data_type}calls.vcf" into variant_calling_file, variant_calling_file_view
+        set file_id, data_type, "${file_id}${data_type}*.vcf" into variant_calling_file
 
         script:
         """
         bcftools mpileup -f ${fasta} ${reads} | bcftools call -mv -Ob -o ${file_id}${data_type}calls.vcf 
-        
-        """
-}
-
-bam_files_view.view()
-variant_calling_file_view.view()
-
-process Bcftools_filtering {
-    label "bcftools_filtering"
-        tag "$file_id"
-        publishDir "${params.outdir}/bcftools/$file_id", mode: 'copy'
-
-        input:
-        set file_id, data_type, file(reads) from variant_calling_file
-
-        output:
-        set file_id, data_type, "${file_id}${data_type}calls_view.vcf" into view_variant_calling_file
-
-        script:
-        """
         bcftools view -i '%QUAL>=20' ${file_id}${data_type}calls.vcf -o ${file_id}${data_type}calls_view.vcf
-
-        """
-
+	"""
 }
 
 ///////////////////////////////////////////////////////////////////////////////
