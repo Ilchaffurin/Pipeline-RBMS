@@ -13,6 +13,11 @@ def helpMessage() {
     Reference genome
       --index          Full path to directory containing genome fasta file
 
+    QC Option:
+      --skipFastqc                  Skip reads quality control step (default: activated).
+      --skipMultiqc                 Skip merging tools reports suitable with multiqc (default: activated)
+
+
     Save option:
       --outdir         Specify where to save the output from the nextflow run (default: "./results/")
 
@@ -29,6 +34,8 @@ def helpMessage() {
 params.help = false
 params.input_dir = false
 params.index = false
+params.skipFastqc = false
+params.skipMultiqc = false
 params.outdir = 'results'
 
 // Show help message
@@ -41,8 +48,23 @@ if (params.help) {
 /* --                          HEADER LOG INFO                            -- */
 ///////////////////////////////////////////////////////////////////////////////
 
-log.info "fastq files    :       ${params.input_dir}"
+log. info "-------------------------------------------------------------------------------"
+log.info "path to fastq files  : ${params.input_dir}"
 log.info "genome fasta file    : ${params.index}"
+log.info "output               : ${params.outdir}"
+if (params.skipFastqc){
+  log.info "Reads QC             : Skipped"
+}
+else {
+  log.info "Reads QC             : Yes"
+}
+if (params.skipMultiqc){
+  log.info "Merging Reports      : Skipped"
+}
+else {
+  log.info "Merging Reports      : Yes"
+}
+log. info "-------------------------------------------------------------------------------"
 
 ///////////////////////////////////////////////////////////////////////////////
 /* --                          VALIDATE INPUTS                            -- */
@@ -87,7 +109,9 @@ process Trimmomatic {
 
         script:
         """
-        trimmomatic SE -phred33 ${reads} ${file_id}_trim.fastq ILLUMINACLIP:~/miniconda2/envs/EnvPipeline/share/trimmomatic-0.39-1/adapters/TruSeq3-SE.fa:2:30:7 LEADING:30 TRAILING:30 SLIDINGWINDOW:4:15 AVGQUAL:30 MINLEN:8
+        trimmomatic SE -phred33 ${reads} ${file_id}_trim.fastq \
+        ILLUMINACLIP:~/miniconda2/envs/EnvPipeline/share/trimmomatic-0.39-1/adapters/TruSeq3-SE.fa:2:30:7 \
+        LEADING:30 TRAILING:30 SLIDINGWINDOW:4:15 AVGQUAL:30 MINLEN:8
         """
 }
 
@@ -99,8 +123,14 @@ fastq_files_2QC
         .concat(fastq_trim_files_2QC)
         .set { fastq_files }
 
-process Fastqc {
-    label "fastqc"
+if (params.skipFastqc) {
+         Channel
+               .empty()
+               .set { fastqc_report }
+ }
+ else{
+    process Fastqc {
+      label "fastqc"
         tag "$file_id"
         publishDir "${params.outdir}/fastq/QC/", mode: 'copy'
           
@@ -114,6 +144,7 @@ process Fastqc {
         """
         fastqc ${reads} --format fastq --outdir ./
         """
+    }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -264,6 +295,9 @@ process MultiQC {
 
       output:
       file "*multiqc_*" into multiqc_report
+
+      when:
+      !params.skipMultiqc
 
       script:
       """
