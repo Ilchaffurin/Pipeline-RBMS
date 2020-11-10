@@ -1,12 +1,13 @@
 #!/usr/bin/python
 #-*-coding: utf-8-*-
 
-# Conversion file in VFC format into file in csv format
-# VCF format looks like BED one
+# Conversion du fichier au format VCF en format csv
+# le fichier csv ressemble au format BED
 
-import numpy as np
+import pandas
 import vcf
 import csv
+import sys
 
 def conversion(f_entrance, f_exit):
     with open(f_entrance, "r") as file_vcf:
@@ -29,11 +30,10 @@ def conversion(f_entrance, f_exit):
     print("Fin de la lecture du fichier .vcf")
 
 
-
-
-
-    # Writing to file in csv format
+    # Ecriture du fichier au format csv
 
     with open(f_exit, "w", nexline = '') as file_csv:
         writerCSV = csv.writer(file_csv, delimiter = "\t")
-        writerCSV = writerow(["[1]CHROM", "[2]POS", "[3]ID", "[4]REF", "[5]ALT", "[6]QUAL", "[7]FILTER"])
+        fieldnames = ["[1]CHROM", "[2]POS", "[3]ID", "[4]REF", "[5]ALT", "[6]QUAL", "[7]FILTER"]
+        writer.writeheader()
+        writerCSV = writerow()
