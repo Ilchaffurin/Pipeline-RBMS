@@ -5,7 +5,7 @@ def helpMessage() {
     Usage:
 
     The typical command for running the pipeline is as follows:
-      nextflow run pipeline.nf --input_dir <path_to_fasta_file(s)> --genome_ref <path_to_genome_file>
+      nextflow run pipeline.nf --input_dir 'path/to/fasta/*.fastq' --genome_ref 'path/to/genome/file.fasta'
 
     Required arguments:
       --input_dir      Directory for fastq files
@@ -19,8 +19,8 @@ def helpMessage() {
       --skipTrmming    Skip trimming step (default: activated).
 
     Mapping option:
-      --onlySTAR       only using STAR mapper (default: STAR and Bowtie2).
-      --onlyBowtie2    only using Bowtie2 mapper (default: STAR and Bowtie2).
+      --onlySTAR       Only using STAR mapper (default: STAR and Bowtie2).
+      --onlyBowtie2    Only using Bowtie2 mapper (default: STAR and Bowtie2).
 
     Save option:
       --outdir         Specify where to save the output from the nextflow run (default: "./results/")
@@ -75,6 +75,12 @@ if (params.skipMultiqc){
 }
 else {
   log.info "Merging Reports      : Yes"
+}
+if (params.skipTrimming){
+  log.info "Trimming             : Skipped"
+}
+else {
+  log.info "Trimming             : Yes"
 }
 if (!params.onlySTAR && !params.onlyBowtie2){
    log.info "Mapper               : STAR ans Bowtie2"
@@ -135,7 +141,7 @@ if (params.skipTrimming) {
   fastqc_files_2trim.into{ fastq_trim_files ; fastq_trim_files2 }
   Channel
     .empty()
-    .set { fastq_trim_files_2QC ; trimming_report }
+    .into { fastq_trim_files_2QC ; trimming_report }
  }
  else{
     process Trimmomatic {
