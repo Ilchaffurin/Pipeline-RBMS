@@ -12,9 +12,9 @@
 
 ## Description
 
-The aim is to analyse the raw data in order to identify the genetic variations from the dataset of lung and breast cancer, in order to better understand the ribosome's heterogeneity and its role in the translational regulation. 
+The aim of this project is to analyse the raw data in order to identify the genetic variations from the dataset of lung and breast cancer, in order to better understand the ribosome's heterogeneity and its role in the translational regulation. 
 
-Aim pipeline 
+For the analyse we establish a scalable and reproducible pipeline in Nextflow workflow. 
 
 The pipeline uses several software like : 
 * FASTQC for quality control 
