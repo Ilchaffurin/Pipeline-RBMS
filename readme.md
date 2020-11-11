@@ -23,7 +23,7 @@ The pipeline uses several software like :
 * BOWTIE2 for indexing and mapping 
 * BCFTOOLS Identification of variants and creation of vcf files 
 * SAMTOOLS Convert a SAM file into a BAM file 
-* MULTIQC 
+* MULTIQC Aggregate results from all analyses into a single report
 
 Pipeline steps  
 
@@ -43,6 +43,12 @@ The pipeline is organised as follows  (imagen)
 <a name="usage"></a> 
 
 ## Usage 
+
+Command for running the pipeline :
+
+```
+nextflow run pipeline.nf --input_dir 'path/to/fasta/*.fastq' --genome_ref 'path/to/genome/file.fasta'
+```
 
 <a name="authors"></a> 
 
