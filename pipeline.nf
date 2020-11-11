@@ -353,12 +353,13 @@ process Bcftools {
         set file_id, data_type, file(reads) from bam_files
         
         output:
-        set file_id, data_type, "${file_id}${data_type}*.vcf" into variant_calling_file, variant_calling_file_view
+        set file_id, data_type, "${file_id}${data_type}*" into variant_calling_file, variant_calling_file_view
 
         script:
         """
         bcftools mpileup -f ${fasta} ${reads} | bcftools call -mv -Ob -o ${file_id}${data_type}calls.vcf 
         bcftools view -i '%QUAL>=20' ${file_id}${data_type}calls.vcf -o ${file_id}${data_type}calls_view.vcf
+        bcftools query -f '%CHROM;%POS;%ID;%REF;%ALT;%QUAL;%FILTER\n' ${file_id}${data_type}calls.vcf -o ${file_id}${data_type}_calls.csv -H
         """
 }
 
