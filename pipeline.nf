@@ -5,17 +5,18 @@ def helpMessage() {
     Usage:
 
     The typical command for running the pipeline is as follows:
-      nextflow run pipeline.nf --input_dir <<path_to_fasta_file(s)>> --index <path_to_genome_file>
+      nextflow run pipeline.nf --input_dir <path_to_fasta_file(s)> --genome_ref <path_to_genome_file>
 
     Required arguments:
       --input_dir      Directory for fastq files
-    
-    Reference genome
-      --index          Full path to directory containing genome fasta file
+      --genome_ref     Full path to directory containing reference genome fasta file
 
-    QC Option:
+    QC option:
       --skipFastqc     Skip reads quality control step (default: activated).
       --skipMultiqc    Skip merging tools reports suitable with multiqc (default: activated)
+
+    Trimming option:
+      --skipTrmming    Skip trimming step (default: activated).
 
     Mapping option:
       --onlySTAR       only using STAR mapper (default: STAR and Bowtie2).
@@ -23,6 +24,9 @@ def helpMessage() {
 
     Save option:
       --outdir         Specify where to save the output from the nextflow run (default: "./results/")
+
+    Threading option   
+      --threads        Specify the number of threads to be used (default: 1).
 
     help message:
       --help           Print help message
@@ -36,12 +40,14 @@ def helpMessage() {
 
 params.help = false
 params.input_dir = false
-params.index = false
+params.genome_ref = false
 params.skipFastqc = false
 params.skipMultiqc = false
+params.skipTrimming = false
 params.onlySTAR = false
 params.onlyBowtie2 = false
 params.outdir = 'results'
+params.threads = 1
 
 // Show help message
 if (params.help) {
@@ -55,8 +61,9 @@ if (params.help) {
 
 log. info "-------------------------------------------------------------------------------"
 log.info "path to fastq files  : ${params.input_dir}"
-log.info "genome fasta file    : ${params.index}"
+log.info "genome fasta file    : ${params.genome_ref}"
 log.info "output               : ${params.outdir}"
+log.info "Number of threads    : ${params.threads}"
 if (params.skipFastqc){
   log.info "Reads QC             : Skipped"
 }
@@ -80,64 +87,76 @@ if (params.onlyBowtie2){
 }
 log. info "-------------------------------------------------------------------------------"
 
+/*
+def summary = [:]
+summary['fastq file(s) from Path']  = params.input_dir ? params.input_dir : 'Not supplied'
+summary['genome fasta file']        = params.genome_ref ? params.genome_ref : 'Not supplied'
+summary['Reads QC']                 = params.skipFastqc ? 'Skipped' : 'Yes'
+summary['Output']                   = params.outdir
+log.info summary.collect{ param,value -> "${param.padRight(30,'-')}: $value" }.join("\n")
+*/
+
 ///////////////////////////////////////////////////////////////////////////////
 /* --                          VALIDATE INPUTS                            -- */
 ///////////////////////////////////////////////////////////////////////////////
 
 if (params.input_dir){
-	Channel
-        .fromPath(params.input_dir)
+  Channel
+        .fromFilePairs(params.input_dir, size:1, checkIfExists: true)
         .ifEmpty { error "Cannot find any fastq files matching: ${params.input_dir}" }
-        .toList()
-        .into { input ; input_2view }
-        
+        .into { fastqc_files_2trim ; fastq_files_2QC ; fastq_files_2view }    
+  fastq_files_2view.view() 
 }
 else { 
     log.info "No fastq files precised.\nUse '--input_dir' \nOr '--help' for more informations"
     exit 1
 }
 
-input_2view.view()
-
-Channel
-        .fromFilePairs(params.input_dir, size:1)
-        .into { fastqc_files_2trim ; fastq_files_2QC ; fastq_files_2view }
-
-fastq_files_2view.view()
-
-if (params.index){
+if (params.genome_ref){
     Channel
-        .fromFilePairs( params.index , size:1 )
-        .ifEmpty { error "Cannot find any index files matching: ${params.index}" }
+        .fromFilePairs( params.genome_ref , size:1 )
+        .ifEmpty { error "Cannot find any genome_ref files matching: ${params.genome_ref}" }
         .into { fasta_2indexing_STAR ; fasta_2indexing_BOWTIE; fasta_2variantCalling }
 }
 else { 
-    log.info "No index file precised.\nUse '--index' \nOr '--help' for more informations"
+    log.info "No genome_ref file precised.\nUse '--genome_ref' \nOr '--help' for more informations"
     exit 1
+}
+
+if (params.threads){
+  cpus = "${params.threads}"
 }
 
 ///////////////////////////////////////////////////////////////////////////////
 /* --                       TRIMMING / CLEANING READS                     -- */
 ///////////////////////////////////////////////////////////////////////////////
 
-process Trimmomatic {
-    label "trimmomatic"
-        tag "$file_id"
-        publishDir "${params.outdir}/fastq/trim/", mode: 'copy'
-          
-        input:
-        set file_id, file(reads) from fastqc_files_2trim
+if (params.skipTrimming) {
+  fastqc_files_2trim.into{ fastq_trim_files ; fastq_trim_files2 }
+  Channel
+    .empty()
+    .set { fastq_trim_files_2QC ; trimming_report }
+ }
+ else{
+    process Trimmomatic {
+        label "trimmomatic"
+            tag "$file_id"
+            publishDir "${params.outdir}/Trimming/$file_id", mode: 'copy'
+              
+            input:
+            set file_id, file(reads) from fastqc_files_2trim
 
-        output:
-        set file_id, "*.fastq" into fastq_trim_files, fastq_trim_files2, fastq_trim_files_2QC, trimming_report
+            output:
+            set file_id, "*.fastq" into fastq_trim_files, fastq_trim_files2, fastq_trim_files_2QC, trimming_report
 
-        script:
-        """
-        trimmomatic SE -phred33 ${reads} ${file_id}_trim.fastq \
-        ILLUMINACLIP:~/miniconda2/envs/EnvPipeline/share/trimmomatic-0.39-1/adapters/TruSeq3-SE.fa:2:30:7 \
-        LEADING:30 TRAILING:30 SLIDINGWINDOW:4:15 AVGQUAL:30 MINLEN:8
-        """
-}
+            script:
+            """
+            trimmomatic SE -threads ${cpus} -phred33 ${reads} ${file_id}_trim.fastq \
+            ILLUMINACLIP:~/miniconda2/envs/EnvPipeline/share/trimmomatic-0.39-1/adapters/TruSeq3-SE.fa:2:30:7 \
+            LEADING:30 TRAILING:30 SLIDINGWINDOW:4:15 AVGQUAL:30 MINLEN:8
+            """
+    }
+ }
 
 ///////////////////////////////////////////////////////////////////////////////
 /* --                         READS QUALITY CONTROLE                      -- */
@@ -156,7 +175,7 @@ if (params.skipFastqc) {
     process Fastqc {
       label "fastqc"
         tag "$file_id"
-        publishDir "${params.outdir}/fastq/QC/", mode: 'copy'
+        publishDir "${params.outdir}/FastQC/$file_id", mode: 'copy'
           
         input:
         set file_id, file(reads) from fastq_files
@@ -190,11 +209,11 @@ else {
         set file_id, file(fasta) from fasta_2indexing_STAR
 
         output:
-        file "*" into index_files_STAR
+        file "*" into index_files_STAR 
 
         script:
         """
-        STAR --runThreadN 20 \
+        STAR --runThreadN ${cpus} \
         --runMode genomeGenerate \
         --genomeDir ./index/ \
         --genomeFastaFiles ${fasta} 
@@ -253,7 +272,7 @@ else {
           script:
           data_type="_star_"
           """
-          STAR --runThreadN 20 \
+          STAR --runThreadN ${cpus} \
           --runMode alignReads \
           --genomeDir ./index/ \
           --readFilesIn ${reads} \
@@ -291,7 +310,7 @@ else {
             }
           }
           """
-          bowtie2 -p 20 \
+          bowtie2 -p ${cpus} \
           --very-sensitive \
           -x ${index_id} \
           -U ${reads} \
@@ -306,8 +325,10 @@ else {
 /* --                         VARIANT CALLING                             -- */
 ///////////////////////////////////////////////////////////////////////////////
 
+
 if (!params.onlySTAR && !params.onlyBowtie2){
   bowtie2_bam_files.concat(star_bam_files).into { bam_files ; bam_files_view}
+  
 }
 if (params.onlySTAR){
   star_bam_files.set { bam_files }
@@ -320,20 +341,23 @@ process Bcftools {
     label "bcftools"
         tag "$file_id"
         publishDir "${params.outdir}/bcftools/$file_id", mode: 'copy'
-
+ 
         input:
         set fasta_id, file(fasta) from fasta_2variantCalling.collect()
         set file_id, data_type, file(reads) from bam_files
         
         output:
-        set file_id, data_type, "${file_id}${data_type}*.vcf" into variant_calling_file
+        set file_id, data_type, "${file_id}${data_type}*.vcf" into variant_calling_file, variant_calling_file_view
 
         script:
         """
         bcftools mpileup -f ${fasta} ${reads} | bcftools call -mv -Ob -o ${file_id}${data_type}calls.vcf 
         bcftools view -i '%QUAL>=20' ${file_id}${data_type}calls.vcf -o ${file_id}${data_type}calls_view.vcf
-	"""
+        """
 }
+
+bam_files_view.view()
+variant_calling_file_view.view()
 
 ///////////////////////////////////////////////////////////////////////////////
 /* --                      MERGE ALL STEPS REPORTS                        -- */
