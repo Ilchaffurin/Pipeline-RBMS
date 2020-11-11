@@ -4,7 +4,7 @@
 1. [Description](#descrp)
 2. [Requirements](#req)
 3. [Usage](#usage)
-4. [Authors and ackowledment](#authors)
+4. [Authors](#authors)
 5. [Project status](#project)
 
 
@@ -87,7 +87,7 @@ help message:
 
 <a name="authors"></a> 
 
-## Authors and ackowledment 
+## Authors 
 
 The project was developped by : 
 
