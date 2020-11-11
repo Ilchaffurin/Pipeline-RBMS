@@ -16,7 +16,7 @@
 
 ## Requirements 
 
-1. Create the environment from EnvPipeline.yml file : 
+##### Create the environment from EnvPipeline.yml file : 
 ``` conda env create -f EnvPipeline.yml ```
 
 <a name="usage"></a> 
