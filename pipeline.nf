@@ -194,7 +194,7 @@ else {
 
         script:
         """
-        STAR --runThreadN 20 \
+        STAR --runThreadN 1 \
         --runMode genomeGenerate \
         --genomeDir ./index/ \
         --genomeFastaFiles ${fasta} 
@@ -253,7 +253,7 @@ else {
           script:
           data_type="_star_"
           """
-          STAR --runThreadN 20 \
+          STAR --runThreadN 2 \
           --runMode alignReads \
           --genomeDir ./index/ \
           --readFilesIn ${reads} \
@@ -291,13 +291,13 @@ else {
             }
           }
           """
-          bowtie2 -p 20 \
+          bowtie2 -p 2 \
           --very-sensitive \
           -x ${index_id} \
           -U ${reads} \
           -S ${file_id}_bowtie2.sam 
           samtools view -bS ${file_id}_bowtie2.sam > ${file_id}_bowtie2.bam
-          samtools sort -@ 20 -O BAM -o ${file_id}_bowtie2_sorted.bam ${file_id}_bowtie2.bam
+          samtools sort -@ 2 -O BAM -o ${file_id}_bowtie2_sorted.bam ${file_id}_bowtie2.bam
           """
   }
 }
@@ -331,7 +331,7 @@ process Bcftools {
         script:
         """
         bcftools mpileup -f ${fasta} ${reads} | bcftools call -mv -Ob -o ${file_id}${data_type}calls.vcf 
-        bcftools view -i '%QUAL>=20' ${file_id}${data_type}calls.vcf -o ${file_id}${data_type}calls_view.vcf
+        bcftools view -i '%QUAL>=2' ${file_id}${data_type}calls.vcf -o ${file_id}${data_type}calls_view.vcf
 	"""
 }
 
