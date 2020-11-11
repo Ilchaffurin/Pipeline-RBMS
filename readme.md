@@ -1,13 +1,11 @@
 # AUTOMATED PIPELINE FOR ANALYSIS OF GENETIC VARIATIONS OF rRNA
 
 ## Table of contents 
-    * [Description](#Description)
-    * [Requirements](#Requirements)
-    * [Usage](#Usage)
-    * [Authors](#Authors)
-    * [Project status](#Project-status)
+    - [Description](#Description)
 
-<a name="Description"></a> # Description
+
+<a name="Description"></a> 
+# Description
 
 ## Requirements 
 
