@@ -50,6 +50,41 @@ The pipeline is organised as follows  (imagen)
 nextflow run pipeline.nf --input_dir 'path/to/fasta/*.fastq' --genome_ref 'path/to/genome/file.fasta'
 ```
 
+##### To run the pipeline help message : 
+
+```
+nextflow run pipeline.nf --help 
+```
+
+##### Help message : 
+```
+Required arguments:
+    --input_dir      Directory for fastq files
+    --genome_ref     Full path to directory containing reference genome fasta file
+
+QC option:
+    --skipFastqc     Skip reads quality control step (default: activated).
+    --skipMultiqc    Skip merging tools reports suitable with multiqc (default: activated)
+
+Trimming option:
+    --skipTrmming    Skip trimming step (default: activated).
+
+Mapping option:
+    --onlySTAR       Only using STAR mapper (default: STAR and Bowtie2).
+    --onlyBowtie2    Only using Bowtie2 mapper (default: STAR and Bowtie2).
+
+Save option:
+    --outdir         Specify where to save the output from the nextflow run (default: "./results/")
+
+Threading option   
+    --threads        Specify the number of threads to be used (default: 1).
+
+help message:
+    --help           Print help message
+```
+
+
+
 <a name="authors"></a> 
 
 ## Authors and ackowledment 
