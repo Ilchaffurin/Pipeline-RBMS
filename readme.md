@@ -46,7 +46,7 @@ The pipeline is organised as follows  (imagen)
 
 ##### To run the pipeline :
 
-```
+```nextflow
 nextflow run pipeline.nf --input_dir 'path/to/fasta/*.fastq' --genome_ref 'path/to/genome/file.fasta'
 ```
 
