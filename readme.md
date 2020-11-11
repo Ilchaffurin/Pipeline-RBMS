@@ -35,8 +35,7 @@ The pipeline is organised as follows  (imagen)
 
 ##### Install miniconda3
 
-https://docs.conda.io/en/latest/miniconda.html#linux-installers - automatic!
-
+[Miniconda](https://docs.conda.io/en/latest/miniconda.html#linux-installers)
 
 ##### Create the environment from EnvPipeline.yml file : 
 ``` conda env create -f EnvPipeline.yml ```
