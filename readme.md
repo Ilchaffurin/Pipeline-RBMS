@@ -27,6 +27,11 @@
 
 ## Authors and ackowledment 
 
+* Chloé AUJOULAT
+* Ilan CHAFFURIN
+* Morgane DES LIGNERIS
+* Isis LORENZO-COLINA
+
 <a name="project"></a> 
 
 ## Project status 
