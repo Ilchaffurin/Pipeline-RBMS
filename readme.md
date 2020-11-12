@@ -94,6 +94,32 @@ nextflow run pipeline.nf --threads 10 --input_dir 'path/to/*.fastq' --genome_ref
 
 #### After execution the script will output all the process : 
 
+```
+N E X T F L O W  ~  version 20.10.0
+Launching `pipeline.nf` [gloomy_linnaeus] - revision: d53c8822c5
+------------------------------------------------------------------------------------------------------------------------
+Fastq file(s) from Path  : /data/home/mdes-ligneris/M1/S1/Projet1/data/B2998_10_S6_R1_001.fastq
+Genome fasta file        : /data/home/mdes-ligneris/M1/S1/Projet1/data/Human.fa
+Output                   : results
+Number of threads        : 1
+Reads QC                 : Yes
+Merging Reports          : Yes
+Trimming                 : Yes
+Mapper                   : STAR ans Bowtie2
+------------------------------------------------------------------------------------------------------------------------
+executor >  local (7)
+[6d/070e25] process > Trimmomatic (B2998_10_S6_R1_001) [100%] 1 of 1 ✔
+[0e/e6067a] process > Fastqc (B2998_10_S6_R1_001)      [100%] 2 of 2 ✔
+executor >  local (7)
+[6d/070e25] process > Trimmomatic (B2998_10_S6_R1_001) [100%] 1 of 1 ✔
+[0e/e6067a] process > Fastqc (B2998_10_S6_R1_001)      [100%] 2 of 2 ✔
+[a8/d9bdab] process > Index_STAR (Human)               [100%] 1 of 1 ✔
+[f2/f96b04] process > Index_BOWTIE (Human)             [100%] 1 of 1 ✔
+[-        ] process > Star (B2998_10_S6_R1_001)        -
+[fe/d28b0e] process > Bowtie2 (B2998_10_S6_R1_001)     [100%] 1 of 1, failed: 1 ✘
+[-        ] process > Bcftools                         -
+[-        ] process > MultiQC                          -
+```
 
 #### Where are the outputs files ? 
 
