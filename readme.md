@@ -101,16 +101,16 @@ By default, all the files are saved in the `./results` directory. In the directo
 
 ##### Convert VCF files into CVS files 
 
-If you want to change the files separators, modify the `;` in the string and insert the separator of interest 
+If you want to change the files separators, you can modify the `;` in the string and insert the separator of interest 
 
 Example: 
-1. In the script the separators are indicated by `;` (semicolon)
+* In the script the separators are indicated by `;` (semicolon)
 
 ```
 bcftools query -f '%CHROM;%POS;%ID;%REF;%ALT;%QUAL;%FILTER\n' ${file_id}${data_type}calls.vfc -o ${file_id}${data_type}_calls.csv -H
 ```
 
-2. In the example the separators are indicated by `,` (commas)
+* In the example the separators are indicated by `,` (comma)
 
 ```
 bcftools query -f '%CHROM,%POS,%ID,%REF,%ALT,%QUAL,%FILTER\n' ${file_id}${data_type}calls.vfc -o ${file_id}${data_type}_calls.csv -H
