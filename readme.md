@@ -40,6 +40,9 @@ The pipeline is organised as follows  (imagen)
 ##### Create the environment from EnvPipeline.yml file : 
 ``` conda env create -f EnvPipeline.yml ```
 
+##### Activate the environement EnvPipeline 
+``` conda activate EnvPipeline ```
+
 <a name="usage"></a> 
 
 ## Usage 
