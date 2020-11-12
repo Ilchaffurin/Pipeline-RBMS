@@ -12,7 +12,7 @@
 
 ## Description
 
-The aim of this project is to analyse the raw data in order to identify the genetic variations from the dataset of lung and breast cancer, in order to better understand the ribosome's heterogeneity and its role in the translational regulation. 
+The aim of this project is to analyse the fastq raw data in order to identify the genetic variations from the dataset of lung and breast cancer, with the pipeline we will be able to better understand the ribosome's heterogeneity and its role in the translational regulation. 
 
 For the analyse we establish a scalable and reproducible pipeline in Nextflow workflow. 
 
@@ -25,9 +25,10 @@ The pipeline uses several software like :
 * SAMTOOLS to convert a SAM file into a BAM file 
 * MULTIQC Aggregate results from all analyses into a single report
 
-Pipeline steps  
+#### The pipeline is organised as follows 
 
-The pipeline is organised as follows  (imagen)  
+![alt text](/img/pipeline.pgn)
+
 
 <a name="req"></a> 
 
