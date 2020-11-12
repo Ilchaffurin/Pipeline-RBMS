@@ -25,7 +25,7 @@ The pipeline uses several software like :
 * `SAMTOOLS` to convert a SAM file into a BAM file 
 * `MULTIQC` Aggregate results from all analyses into a single report
 
-##### The pipeline is organized as follows:  
+#### The pipeline is organized as follows:  
 
 ![alt text](/img/pipeline.png)
 
@@ -33,14 +33,14 @@ The pipeline uses several software like :
 
 ## Requirements 
 
-##### Install miniconda3
+#### Install miniconda3
 
 [Miniconda](https://docs.conda.io/en/latest/miniconda.html#linux-installers)
 
-##### Create the environment from EnvPipeline.yml file: 
+#### Create the environment from EnvPipeline.yml file: 
 ``` conda env create -f EnvPipeline.yml ```
 
-##### Activate the environement EnvPipeline 
+#### Activate the environement EnvPipeline 
 ``` conda activate EnvPipeline ```
 
 <a name="usage"></a> 
@@ -126,8 +126,8 @@ Succeeded   : 10
 
 By default, all the files are saved in the `./results` directory. In the directory you will find five different directories named as each process:  
 
-* FastQC for the HTML quatilty control files before and after trimming and cleaning 
-* trimmming for the fastq file(s) after trimming and cleaning  
+* fastQC for the HTML quatity control files before and after trimming and cleaning 
+* trimming for the fastq file(s) after trimming and cleaning  
 * mapping for the index and align directory for STAR and BOWTIE2 process 
 * multiQC for the HTML file for the final quality rapport 
 * bcftools with the vcf and cvs files for the variant calling process 
@@ -149,6 +149,8 @@ bcftools query -f '%CHROM;%POS;%ID;%REF;%ALT;%QUAL;%FILTER\n' ${file_id}${data_t
 ```
 bcftools query -f '%CHROM,%POS,%ID,%REF,%ALT,%QUAL,%FILTER\n' ${file_id}${data_type}calls.vfc -o ${file_id}${data_type}_calls.csv -H
 ```
+
+#### 
 
 <a name="authors"></a> 
 
