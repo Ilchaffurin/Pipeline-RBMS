@@ -1,0 +1,138 @@
+Nov-10 15:39:21.401 [main] DEBUG nextflow.cli.Launcher - $> nextflow run pipeline.nf --input_dir '/data/home/mdes-ligneris/M1/S1/Projet1/data/C*.fastq' --index /data/home/mdes-ligneris/M1/S1/Projet1/data/Human.fa --outdir resultsThreeBoth
+Nov-10 15:39:21.781 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 20.07.1
+Nov-10 15:39:21.824 [main] INFO  nextflow.cli.CmdRun - Launching `pipeline.nf` [jolly_swirles] - revision: 7ce765f4f3
+Nov-10 15:39:22.190 [main] DEBUG nextflow.Session - Session uuid: 43064929-907d-481e-9d1c-9946dd5021de
+Nov-10 15:39:22.192 [main] DEBUG nextflow.Session - Run name: jolly_swirles
+Nov-10 15:39:22.205 [main] DEBUG nextflow.Session - Executor pool size: 4
+Nov-10 15:39:22.417 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 20.07.1 build 5412
+  Created: 24-07-2020 15:18 UTC (17:18 CEST)
+  System: Linux 5.4.0-52-generic
+  Runtime: Groovy 2.5.11 on OpenJDK 64-Bit Server VM 10.0.2+13
+  Encoding: UTF-8 (UTF-8)
+  Process: 33410@isis-computer [127.0.1.1]
+  CPUs: 4 - Mem: 7.7 GB (126.7 MB) - Swap: 2 GB (1.8 GB)
+Nov-10 15:39:22.529 [main] DEBUG nextflow.Session - Work-dir: /home/isis/Documents/M1/PROJET/Projet-S1-M1/work [ext2/ext3]
+Nov-10 15:39:22.531 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /home/isis/Documents/M1/PROJET/Projet-S1-M1/bin
+Nov-10 15:39:22.648 [main] DEBUG nextflow.Session - Observer factory: TowerFactory
+Nov-10 15:39:22.652 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Nov-10 15:39:22.985 [main] DEBUG nextflow.Session - Session start invoked
+Nov-10 15:39:24.424 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Nov-10 15:39:24.441 [main] DEBUG nextflow.Session - Workflow process names [dsl1]: Index_STAR, Bowtie2, MultiQC, Star, Index_BOWTIE, Trimmomatic, Bcftools, Fastqc
+Nov-10 15:39:24.461 [main] INFO  nextflow.Nextflow - -------------------------------------------------------------------------------
+Nov-10 15:39:24.468 [main] INFO  nextflow.Nextflow - path to fastq files  : /data/home/mdes-ligneris/M1/S1/Projet1/data/C*.fastq
+Nov-10 15:39:24.470 [main] INFO  nextflow.Nextflow - genome fasta file    : /data/home/mdes-ligneris/M1/S1/Projet1/data/Human.fa
+Nov-10 15:39:24.472 [main] INFO  nextflow.Nextflow - output               : resultsThreeBoth
+Nov-10 15:39:24.474 [main] INFO  nextflow.Nextflow - Reads QC             : Yes
+Nov-10 15:39:24.476 [main] INFO  nextflow.Nextflow - Merging Reports      : Yes
+Nov-10 15:39:24.482 [main] INFO  nextflow.Nextflow - Mapper               : STAR ans Bowtie2
+Nov-10 15:39:24.483 [main] INFO  nextflow.Nextflow - -------------------------------------------------------------------------------
+Nov-10 15:39:24.620 [PathVisitor-1] DEBUG nextflow.file.PathVisitor - files for syntax: glob; folder: /data/home/mdes-ligneris/M1/S1/Projet1/data/; pattern: C*.fastq; options: [:]
+Nov-10 15:39:24.631 [PathVisitor-1] DEBUG nextflow.file.PathVisitor - No such file: /data/home/mdes-ligneris/M1/S1/Projet1/data/ -- Skipping visit
+Nov-10 15:39:24.756 [Actor Thread 1] ERROR nextflow.extension.OperatorEx - @unknown
+nextflow.exception.ProcessUnrecoverableException: Cannot find any fastq files matching: /data/home/mdes-ligneris/M1/S1/Projet1/data/C*.fastq
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance0(Native Method)
+	at java.base/jdk.internal.reflect.NativeConstructorAccessorImpl.newInstance(NativeConstructorAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingConstructorAccessorImpl.newInstance(DelegatingConstructorAccessorImpl.java:45)
+	at java.base/java.lang.reflect.Constructor.newInstance(Constructor.java:488)
+	at org.codehaus.groovy.reflection.CachedConstructor.invoke(CachedConstructor.java:80)
+	at org.codehaus.groovy.runtime.callsite.ConstructorSite$ConstructorSiteNoUnwrapNoCoerce.callConstructor(ConstructorSite.java:105)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallConstructor(CallSiteArray.java:59)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:237)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callConstructor(AbstractCallSite.java:249)
+	at nextflow.Nextflow.error(Nextflow.groovy:262)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:564)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:101)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:323)
+	at org.codehaus.groovy.runtime.callsite.StaticMetaMethodSite$StaticMetaMethodSiteNoUnwrap.invoke(StaticMetaMethodSite.java:131)
+	at org.codehaus.groovy.runtime.callsite.StaticMetaMethodSite.callStatic(StaticMetaMethodSite.java:100)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCallStatic(CallSiteArray.java:55)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:196)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.callStatic(AbstractCallSite.java:208)
+	at Script_401bd29c$_runScript_closure1.doCall(Script_401bd29c:90)
+	at Script_401bd29c$_runScript_closure1.doCall(Script_401bd29c)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:564)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:101)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:323)
+	at org.codehaus.groovy.runtime.metaclass.ClosureMetaClass.invokeMethod(ClosureMetaClass.java:263)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1041)
+	at org.codehaus.groovy.runtime.callsite.PogoMetaClassSite.call(PogoMetaClassSite.java:37)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:47)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:115)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:119)
+	at nextflow.extension.OperatorEx$_ifEmpty_closure38.doCall(OperatorEx.groovy:1367)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:564)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:101)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:323)
+	at org.codehaus.groovy.runtime.metaclass.ClosureMetaClass.invokeMethod(ClosureMetaClass.java:263)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1041)
+	at org.codehaus.groovy.runtime.callsite.PogoMetaClassSite.call(PogoMetaClassSite.java:37)
+	at org.codehaus.groovy.runtime.callsite.CallSiteArray.defaultCall(CallSiteArray.java:47)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:115)
+	at org.codehaus.groovy.runtime.callsite.AbstractCallSite.call(AbstractCallSite.java:127)
+	at nextflow.extension.DataflowHelper$3.afterStop(DataflowHelper.groovy:259)
+	at groovyx.gpars.dataflow.operator.DataflowProcessor.fireAfterStop(DataflowProcessor.java:324)
+	at groovyx.gpars.dataflow.operator.DataflowProcessorActor.afterStop(DataflowProcessorActor.java:59)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at java.base/jdk.internal.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:62)
+	at java.base/jdk.internal.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:43)
+	at java.base/java.lang.reflect.Method.invoke(Method.java:564)
+	at org.codehaus.groovy.reflection.CachedMethod.invoke(CachedMethod.java:101)
+	at groovy.lang.MetaMethod.doMethodInvoke(MetaMethod.java:323)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1217)
+	at groovy.lang.MetaClassImpl.invokeMethod(MetaClassImpl.java:1041)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokePojoMethod(InvokerHelper.java:999)
+	at org.codehaus.groovy.runtime.InvokerHelper.invokeMethod(InvokerHelper.java:990)
+	at groovyx.gpars.actor.Actor.callDynamic(Actor.java:369)
+	at groovyx.gpars.actor.Actor.handleTermination(Actor.java:320)
+	at groovyx.gpars.actor.AbstractLoopingActor.terminate(AbstractLoopingActor.java:204)
+	at groovyx.gpars.dataflow.operator.DataflowProcessor.terminate(DataflowProcessor.java:147)
+	at groovyx.gpars.dataflow.operator.DataflowProcessorActor.checkPoison(DataflowProcessorActor.java:115)
+	at groovyx.gpars.dataflow.operator.DataflowOperatorActor.onMessage(DataflowOperatorActor.java:83)
+	at groovyx.gpars.actor.impl.SDAClosure$1.call(SDAClosure.java:43)
+	at groovyx.gpars.actor.AbstractLoopingActor.runEnhancedWithoutRepliesOnMessages(AbstractLoopingActor.java:293)
+	at groovyx.gpars.actor.AbstractLoopingActor.access$400(AbstractLoopingActor.java:30)
+	at groovyx.gpars.actor.AbstractLoopingActor$1.handleMessage(AbstractLoopingActor.java:93)
+	at groovyx.gpars.util.AsyncMessagingCore.run(AsyncMessagingCore.java:132)
+	at java.base/java.util.concurrent.ThreadPoolExecutor.runWorker(ThreadPoolExecutor.java:1135)
+	at java.base/java.util.concurrent.ThreadPoolExecutor$Worker.run(ThreadPoolExecutor.java:635)
+	at java.base/java.lang.Thread.run(Thread.java:844)
+Nov-10 15:39:24.784 [Actor Thread 1] DEBUG nextflow.Session - Session aborted -- Cause: Cannot find any fastq files matching: /data/home/mdes-ligneris/M1/S1/Projet1/data/C*.fastq
+Nov-10 15:39:24.919 [PathVisitor-1] DEBUG nextflow.file.PathVisitor - files for syntax: glob; folder: /data/home/mdes-ligneris/M1/S1/Projet1/data/; pattern: C*.fastq; options: [:]
+Nov-10 15:39:24.919 [PathVisitor-1] DEBUG nextflow.file.PathVisitor - No such file: /data/home/mdes-ligneris/M1/S1/Projet1/data/ -- Skipping visit
+Nov-10 15:39:25.149 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Nov-10 15:39:25.150 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-10 15:39:25.158 [main] DEBUG nextflow.executor.Executor - [warm up] executor > local
+Nov-10 15:39:25.167 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=4; memory=7.7 GB; capacity=4; pollInterval=100ms; dumpInterval=5m
+Nov-10 15:39:25.350 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Nov-10 15:39:25.350 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-10 15:39:25.378 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Nov-10 15:39:25.378 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-10 15:39:25.402 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Nov-10 15:39:25.402 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-10 15:39:25.460 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Nov-10 15:39:25.461 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-10 15:39:25.510 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Nov-10 15:39:25.523 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-10 15:39:25.577 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Nov-10 15:39:25.580 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-10 15:39:25.691 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Nov-10 15:39:25.691 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-10 15:39:25.703 [main] DEBUG nextflow.script.ScriptRunner - > Await termination 
+Nov-10 15:39:25.709 [main] DEBUG nextflow.Session - Session await
+Nov-10 15:39:25.703 [Actor Thread 1] DEBUG nextflow.util.CacheHelper - Unable to get file attributes file: /data/home/mdes-ligneris/M1/S1/Projet1/data/Human.fa -- Cause: java.nio.file.NoSuchFileException: /data/home/mdes-ligneris/M1/S1/Projet1/data/Human.fa
+Nov-10 15:39:25.709 [Actor Thread 5] DEBUG nextflow.util.CacheHelper - Unable to get file attributes file: /data/home/mdes-ligneris/M1/S1/Projet1/data/Human.fa -- Cause: java.nio.file.NoSuchFileException: /data/home/mdes-ligneris/M1/S1/Projet1/data/Human.fa
+Nov-10 15:39:25.710 [main] DEBUG nextflow.Session - Session await > all process finished
+Nov-10 15:39:25.714 [main] DEBUG nextflow.Session - Session await > all barriers passed
+Nov-10 15:39:25.753 [main] DEBUG nextflow.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=0; failedCount=0; ignoredCount=0; cachedCount=0; pendingCount=0; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=0; succeedDuration=0ms; failedDuration=0ms; cachedDuration=0ms;loadCpus=0; loadMemory=0; peakRunning=0; peakCpus=0; peakMemory=0; ]
+Nov-10 15:39:25.890 [main] DEBUG nextflow.CacheDB - Closing CacheDB done
+Nov-10 15:39:25.964 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye

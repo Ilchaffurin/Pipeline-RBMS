@@ -1,0 +1,110 @@
+Nov-10 15:55:00.980 [main] DEBUG nextflow.cli.Launcher - $> nextflow run pipeline.nf --input_dir /home/isis/Documents/M1/PROJET/Donnees/C3945_2020_RMS_1_25-S11__GGCTAC__1.fastq --index /home/isis/Documents/M1/PROJET/Donnees/Human.fa --outdir resultsCBoth --onlyBowtie2
+Nov-10 15:55:01.251 [main] INFO  nextflow.cli.CmdRun - N E X T F L O W  ~  version 20.07.1
+Nov-10 15:55:01.286 [main] INFO  nextflow.cli.CmdRun - Launching `pipeline.nf` [prickly_watson] - revision: 99ae5d7eb5
+Nov-10 15:55:01.658 [main] DEBUG nextflow.Session - Session uuid: 8501e37b-1b7c-403f-ba35-21edb3cdaf3e
+Nov-10 15:55:01.660 [main] DEBUG nextflow.Session - Run name: prickly_watson
+Nov-10 15:55:01.664 [main] DEBUG nextflow.Session - Executor pool size: 4
+Nov-10 15:55:01.788 [main] DEBUG nextflow.cli.CmdRun - 
+  Version: 20.07.1 build 5412
+  Created: 24-07-2020 15:18 UTC (17:18 CEST)
+  System: Linux 5.4.0-52-generic
+  Runtime: Groovy 2.5.11 on OpenJDK 64-Bit Server VM 10.0.2+13
+  Encoding: UTF-8 (UTF-8)
+  Process: 36016@isis-computer [127.0.1.1]
+  CPUs: 4 - Mem: 7.7 GB (463.7 MB) - Swap: 2 GB (1.3 GB)
+Nov-10 15:55:01.944 [main] DEBUG nextflow.Session - Work-dir: /home/isis/Documents/M1/PROJET/Projet-S1-M1/work [ext2/ext3]
+Nov-10 15:55:01.945 [main] DEBUG nextflow.Session - Script base path does not exist or is not a directory: /home/isis/Documents/M1/PROJET/Projet-S1-M1/bin
+Nov-10 15:55:02.097 [main] DEBUG nextflow.Session - Observer factory: TowerFactory
+Nov-10 15:55:02.106 [main] DEBUG nextflow.Session - Observer factory: DefaultObserverFactory
+Nov-10 15:55:02.580 [main] DEBUG nextflow.Session - Session start invoked
+Nov-10 15:55:04.087 [main] DEBUG nextflow.script.ScriptRunner - > Launching execution
+Nov-10 15:55:04.101 [main] DEBUG nextflow.Session - Workflow process names [dsl1]: Index_STAR, Bowtie2, MultiQC, Star, Index_BOWTIE, Trimmomatic, Bcftools, Fastqc
+Nov-10 15:55:04.125 [main] INFO  nextflow.Nextflow - -------------------------------------------------------------------------------
+Nov-10 15:55:04.133 [main] INFO  nextflow.Nextflow - path to fastq files  : /home/isis/Documents/M1/PROJET/Donnees/C3945_2020_RMS_1_25-S11__GGCTAC__1.fastq
+Nov-10 15:55:04.133 [main] INFO  nextflow.Nextflow - genome fasta file    : /home/isis/Documents/M1/PROJET/Donnees/Human.fa
+Nov-10 15:55:04.134 [main] INFO  nextflow.Nextflow - output               : resultsCBoth
+Nov-10 15:55:04.134 [main] INFO  nextflow.Nextflow - Reads QC             : Yes
+Nov-10 15:55:04.134 [main] INFO  nextflow.Nextflow - Merging Reports      : Yes
+Nov-10 15:55:04.135 [main] INFO  nextflow.Nextflow - Mapper               : Bowtie2
+Nov-10 15:55:04.135 [main] INFO  nextflow.Nextflow - -------------------------------------------------------------------------------
+Nov-10 15:55:04.718 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Nov-10 15:55:04.718 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-10 15:55:04.731 [main] DEBUG nextflow.executor.Executor - [warm up] executor > local
+Nov-10 15:55:04.750 [main] DEBUG n.processor.LocalPollingMonitor - Creating local task monitor for executor 'local' > cpus=4; memory=7.7 GB; capacity=4; pollInterval=100ms; dumpInterval=5m
+Nov-10 15:55:04.979 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Nov-10 15:55:04.980 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-10 15:55:05.014 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Nov-10 15:55:05.015 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-10 15:55:05.171 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Nov-10 15:55:05.171 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-10 15:55:05.212 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Nov-10 15:55:05.214 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-10 15:55:05.285 [main] DEBUG nextflow.executor.ExecutorFactory - << taskConfig executor: null
+Nov-10 15:55:05.286 [main] DEBUG nextflow.executor.ExecutorFactory - >> processorType: 'local'
+Nov-10 15:55:05.299 [main] DEBUG nextflow.script.ScriptRunner - > Await termination 
+Nov-10 15:55:05.299 [main] DEBUG nextflow.Session - Session await
+Nov-10 15:55:05.376 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-10 15:55:05.397 [Task submitter] INFO  nextflow.Session - [b6/797d3c] Submitted process > Fastqc (C3945_2020_RMS_1_25-S11__GGCTAC__1)
+Nov-10 15:55:05.418 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-10 15:55:05.422 [Task submitter] INFO  nextflow.Session - [7b/02816d] Submitted process > Index_BOWTIE (Human)
+Nov-10 15:55:05.442 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-10 15:55:05.453 [Task submitter] INFO  nextflow.Session - [41/a69e47] Submitted process > Trimmomatic (C3945_2020_RMS_1_25-S11__GGCTAC__1)
+Nov-10 15:55:06.192 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 3; name: Index_BOWTIE (Human); status: COMPLETED; exit: 0; error: -; workDir: /home/isis/Documents/M1/PROJET/Projet-S1-M1/work/7b/02816dbbca6f8ea51f0e8359904724]
+Nov-10 15:55:06.293 [Task monitor] DEBUG n.util.BlockingThreadExecutorFactory - Thread pool name=FileTransfer; maxThreads=12; maxQueueSize=36; keepAlive=1m
+Nov-10 15:58:19.132 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 1; name: Trimmomatic (C3945_2020_RMS_1_25-S11__GGCTAC__1); status: COMPLETED; exit: 0; error: -; workDir: /home/isis/Documents/M1/PROJET/Projet-S1-M1/work/41/a69e4780743104a6d72ea3edcff9da]
+Nov-10 15:58:19.215 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-10 15:58:19.231 [Task submitter] INFO  nextflow.Session - [b3/510e71] Submitted process > Fastqc (C3945_2020_RMS_1_25-S11__GGCTAC__1)
+Nov-10 15:58:19.249 [Task submitter] DEBUG nextflow.executor.LocalTaskHandler - Launch cmd line: /bin/bash -ue .command.run
+Nov-10 15:58:19.249 [Task submitter] INFO  nextflow.Session - [bd/45b781] Submitted process > Bowtie2 (C3945_2020_RMS_1_25-S11__GGCTAC__1)
+Nov-10 16:00:04.886 [Task monitor] DEBUG n.processor.TaskPollingMonitor - !! executor local > tasks to be completed: 3 -- submitted tasks are shown below
+~> TaskHandler[id: 2; name: Fastqc (C3945_2020_RMS_1_25-S11__GGCTAC__1); status: RUNNING; exit: -; error: -; workDir: /home/isis/Documents/M1/PROJET/Projet-S1-M1/work/b6/797d3c7905668514ad60530b7f8848]
+~> TaskHandler[id: 5; name: Fastqc (C3945_2020_RMS_1_25-S11__GGCTAC__1); status: RUNNING; exit: -; error: -; workDir: /home/isis/Documents/M1/PROJET/Projet-S1-M1/work/b3/510e71fbe9203ae7f2246e30c71a6f]
+~> TaskHandler[id: 4; name: Bowtie2 (C3945_2020_RMS_1_25-S11__GGCTAC__1); status: RUNNING; exit: -; error: -; workDir: /home/isis/Documents/M1/PROJET/Projet-S1-M1/work/bd/45b7811d2972579d24ef0a85ccfdee]
+Nov-10 16:02:02.696 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 2; name: Fastqc (C3945_2020_RMS_1_25-S11__GGCTAC__1); status: COMPLETED; exit: 0; error: -; workDir: /home/isis/Documents/M1/PROJET/Projet-S1-M1/work/b6/797d3c7905668514ad60530b7f8848]
+Nov-10 16:05:04.931 [Task monitor] DEBUG n.processor.TaskPollingMonitor - !! executor local > tasks to be completed: 2 -- submitted tasks are shown below
+~> TaskHandler[id: 5; name: Fastqc (C3945_2020_RMS_1_25-S11__GGCTAC__1); status: RUNNING; exit: -; error: -; workDir: /home/isis/Documents/M1/PROJET/Projet-S1-M1/work/b3/510e71fbe9203ae7f2246e30c71a6f]
+~> TaskHandler[id: 4; name: Bowtie2 (C3945_2020_RMS_1_25-S11__GGCTAC__1); status: RUNNING; exit: -; error: -; workDir: /home/isis/Documents/M1/PROJET/Projet-S1-M1/work/bd/45b7811d2972579d24ef0a85ccfdee]
+Nov-10 16:06:27.124 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 5; name: Fastqc (C3945_2020_RMS_1_25-S11__GGCTAC__1); status: COMPLETED; exit: 0; error: -; workDir: /home/isis/Documents/M1/PROJET/Projet-S1-M1/work/b3/510e71fbe9203ae7f2246e30c71a6f]
+Nov-10 16:10:05.020 [Task monitor] DEBUG n.processor.TaskPollingMonitor - !! executor local > tasks to be completed: 1 -- submitted tasks are shown below
+~> TaskHandler[id: 4; name: Bowtie2 (C3945_2020_RMS_1_25-S11__GGCTAC__1); status: RUNNING; exit: -; error: -; workDir: /home/isis/Documents/M1/PROJET/Projet-S1-M1/work/bd/45b7811d2972579d24ef0a85ccfdee]
+Nov-10 16:15:05.058 [Task monitor] DEBUG n.processor.TaskPollingMonitor - !! executor local > tasks to be completed: 1 -- submitted tasks are shown below
+~> TaskHandler[id: 4; name: Bowtie2 (C3945_2020_RMS_1_25-S11__GGCTAC__1); status: RUNNING; exit: -; error: -; workDir: /home/isis/Documents/M1/PROJET/Projet-S1-M1/work/bd/45b7811d2972579d24ef0a85ccfdee]
+Nov-10 16:20:05.112 [Task monitor] DEBUG n.processor.TaskPollingMonitor - !! executor local > tasks to be completed: 1 -- submitted tasks are shown below
+~> TaskHandler[id: 4; name: Bowtie2 (C3945_2020_RMS_1_25-S11__GGCTAC__1); status: RUNNING; exit: -; error: -; workDir: /home/isis/Documents/M1/PROJET/Projet-S1-M1/work/bd/45b7811d2972579d24ef0a85ccfdee]
+Nov-10 16:21:48.420 [Task monitor] DEBUG n.processor.TaskPollingMonitor - Task completed > TaskHandler[id: 4; name: Bowtie2 (C3945_2020_RMS_1_25-S11__GGCTAC__1); status: COMPLETED; exit: 127; error: -; workDir: /home/isis/Documents/M1/PROJET/Projet-S1-M1/work/bd/45b7811d2972579d24ef0a85ccfdee]
+Nov-10 16:21:48.518 [Task monitor] ERROR nextflow.processor.TaskProcessor - Error executing process > 'Bowtie2 (C3945_2020_RMS_1_25-S11__GGCTAC__1)'
+
+Caused by:
+  Process `Bowtie2 (C3945_2020_RMS_1_25-S11__GGCTAC__1)` terminated with an error exit status (127)
+
+Command executed:
+
+  bowtie2 -p 2           --very-sensitive           -x Human.index           -U C3945_2020_RMS_1_25-S11__GGCTAC__1_trim.fastq           -S C3945_2020_RMS_1_25-S11__GGCTAC__1_bowtie2.sam 
+  samtools view -bS C3945_2020_RMS_1_25-S11__GGCTAC__1_bowtie2.sam > C3945_2020_RMS_1_25-S11__GGCTAC__1_bowtie2.bam
+  samtools sort -@ 2 -O BAM -o C3945_2020_RMS_1_25-S11__GGCTAC__1_bowtie2_sorted.bam C3945_2020_RMS_1_25-S11__GGCTAC__1_bowtie2.bam
+
+Command exit status:
+  127
+
+Command output:
+  (empty)
+
+Command error:
+  49644961 reads; of these:
+    49644961 (100.00%) were unpaired; of these:
+      30264494 (60.96%) aligned 0 times
+      19376852 (39.03%) aligned exactly 1 time
+      3615 (0.01%) aligned >1 times
+  39.04% overall alignment rate
+  .command.sh: line 3: samtools: command not found
+
+Work dir:
+  /home/isis/Documents/M1/PROJET/Projet-S1-M1/work/bd/45b7811d2972579d24ef0a85ccfdee
+
+Tip: when you have fixed the problem you can continue the execution adding the option `-resume` to the run command line
+Nov-10 16:21:48.561 [Task monitor] DEBUG nextflow.Session - Session aborted -- Cause: Process `Bowtie2 (C3945_2020_RMS_1_25-S11__GGCTAC__1)` terminated with an error exit status (127)
+Nov-10 16:21:48.636 [main] DEBUG nextflow.Session - Session await > all process finished
+Nov-10 16:21:48.637 [main] DEBUG nextflow.Session - Session await > all barriers passed
+Nov-10 16:21:48.664 [main] DEBUG nextflow.trace.WorkflowStatsObserver - Workflow completed > WorkflowStats[succeededCount=4; failedCount=1; ignoredCount=0; cachedCount=0; pendingCount=1; submittedCount=0; runningCount=0; retriesCount=0; abortedCount=0; succeedDuration=18m 19s; failedDuration=23m 29s; cachedDuration=0ms;loadCpus=0; loadMemory=0; peakRunning=3; peakCpus=3; peakMemory=0; ]
+Nov-10 16:21:48.805 [main] DEBUG nextflow.CacheDB - Closing CacheDB done
+Nov-10 16:21:48.838 [main] DEBUG nextflow.script.ScriptRunner - > Execution complete -- Goodbye
