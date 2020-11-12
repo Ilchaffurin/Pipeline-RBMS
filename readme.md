@@ -22,7 +22,7 @@ The pipeline uses several software like :
 * `STAR` for indexing and mapping 
 * `BOWTIE2` for indexing and mapping 
 * `BCFTOOLS` to identify variants and creation of cvs files 
-* `SAMTOOLS` to convert a SAM file into a BAM file 
+* `SAMTOOLS` to convert and sort a SAM file into a BAM file 
 * `MULTIQC` Aggregate results from all analyses into a single report
 
 #### The pipeline is organized as follows:  
