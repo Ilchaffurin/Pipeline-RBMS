@@ -33,14 +33,14 @@ The pipeline uses several software like :
 
 ## Requirements 
 
-#### Install miniconda3
+#### Install miniconda3: 
 
 [Miniconda](https://docs.conda.io/en/latest/miniconda.html#linux-installers)
 
 #### Create the environment from EnvPipeline.yml file: 
 ``` conda env create -f EnvPipeline.yml ```
 
-#### Activate the environement EnvPipeline 
+#### Activate the environement EnvPipeline:
 ``` conda activate EnvPipeline ```
 
 <a name="usage"></a> 
