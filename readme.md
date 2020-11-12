@@ -21,14 +21,13 @@ The pipeline uses several software like :
 * TRIMMOMATIC for trimming and cleaning reads
 * STAR for indexing and mapping 
 * BOWTIE2 for indexing and mapping 
-* BCFTOOLS to identify variants and creation of vcf files 
+* BCFTOOLS to identify variants and creation of cvs files 
 * SAMTOOLS to convert a SAM file into a BAM file 
 * MULTIQC Aggregate results from all analyses into a single report
 
-#### The pipeline is organized as follows:  
+##### The pipeline is organized as follows:  
 
 ![alt text](/img/pipeline.png)
-
 
 <a name="req"></a> 
 
@@ -87,8 +86,32 @@ help message:
 nextflow run pipeline.nf --threads 10 --input_dir 'path/to/*.fastq' --genome_ref 'path/to/file.fasta'
 ```
 
+##### Execution example the
+
+```nextflow
+ nextflow run pipeline.nf --input_dir '/data/home/mdes-ligneris/M1/S1/Projet1/data/B2998_10_S6_R1_001.fastq' --genome_ref /data/home/mdes-ligneris/M1/S1/Projet1/data/Human.fa --outdir resultsCBoth
+ ```
+
+##### After execution the script will output all the process : 
 
 
+##### Where are the outputs files ? 
+
+By default, all the files are saved in the `./results` directory. In the directory you will find five different file with the name of each process ()
+
+##### Convert VCF files into CVS files 
+
+If you want to change the files separators, modify the `;` in the string and insert the separator of interest 
+
+Example: 
+1. In the script the separators are indicated by `;` (semicolon)
+```
+bcftools query -f '%CHROM;%POS;%ID;%REF;%ALT;%QUAL;%FILTER\n' ${file_id}${data_type}calls.vfc -o ${file_id}${data_type}_calls.csv -H
+```
+2. In the example the separators are indicated by `,` (commas)
+```
+bcftools query -f '%CHROM,%POS,%ID,%REF,%ALT,%QUAL,%FILTER\n' ${file_id}${data_type}calls.vfc -o ${file_id}${data_type}_calls.csv -H
+```
 
 <a name="authors"></a> 
 
