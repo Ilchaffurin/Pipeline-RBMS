@@ -123,7 +123,7 @@ executor >  local (7)
 
 #### Where are the outputs files ? 
 
-By default, all the files are saved in the `./results` directory. In the directory you will find five different file with the name of each process ()
+By default, all the files are saved in the `./results` directory. In the directory you will find five different files named as each process:  
 
 #### Convert VCF files into CVS files 
 
