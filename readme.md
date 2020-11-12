@@ -25,7 +25,7 @@ The pipeline uses several software like :
 * SAMTOOLS to convert a SAM file into a BAM file 
 * MULTIQC Aggregate results from all analyses into a single report
 
-#### The pipeline is organised as follows 
+#### The pipeline is organized as follows:  
 
 ![alt text](/img/pipeline.png)
 
