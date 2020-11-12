@@ -83,7 +83,8 @@ help message:
 nextflow run pipeline.nf --threads 10 --input_dir 'path/to/*.fastq' --genome_ref 'path/to/file.fasta'
 ```
 
-####
+
+
 
 <a name="authors"></a> 
 
@@ -95,6 +96,7 @@ The project was developped by :
 * Ilan CHAFFURIN
 * Morgane DES LIGNERIS
 * Isis LORENZO-COLINA
+
 
 <a name="project"></a> 
 
