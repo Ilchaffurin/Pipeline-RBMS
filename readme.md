@@ -21,8 +21,8 @@ The pipeline uses several software like :
 * TRIMMOMATIC for trimming and cleaning reads
 * STAR for indexing and mapping 
 * BOWTIE2 for indexing and mapping 
-* BCFTOOLS Identification of variants and creation of vcf files 
-* SAMTOOLS Convert a SAM file into a BAM file 
+* BCFTOOLS to identify variants and creation of vcf files 
+* SAMTOOLS to convert a SAM file into a BAM file 
 * MULTIQC Aggregate results from all analyses into a single report
 
 Pipeline steps  
@@ -47,12 +47,12 @@ The pipeline is organised as follows  (imagen)
 ##### To run the pipeline :
 
 ```nextflow
-nextflow run pipeline.nf --input_dir 'path/to/fasta/*.fastq' --genome_ref 'path/to/genome/file.fasta'
+nextflow run pipeline.nf --threads 10 --input_dir 'path/to/*.fastq' --genome_ref 'path/to/file.fasta'
 ```
 
 ##### To run the pipeline help message : 
 
-```
+```nextflow
 nextflow run pipeline.nf --help 
 ```
 
