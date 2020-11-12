@@ -105,15 +105,15 @@ If you want to change the files separators, modify the `;` in the string and ins
 
 Example: 
 1. In the script the separators are indicated by `;` (semicolon)
-```
-bcftools query -f '%CHROM;%POS;%ID;%REF;%ALT;%QUAL;%FILTER\n' ${file_id}${data_type}calls.vfc -o ${file_id}${data_type}_calls.csv -H
 
 ```
+bcftools query -f '%CHROM;%POS;%ID;%REF;%ALT;%QUAL;%FILTER\n' ${file_id}${data_type}calls.vfc -o ${file_id}${data_type}_calls.csv -H
+```
+
 2. In the example the separators are indicated by `,` (commas)
 
 ```
 bcftools query -f '%CHROM,%POS,%ID,%REF,%ALT,%QUAL,%FILTER\n' ${file_id}${data_type}calls.vfc -o ${file_id}${data_type}_calls.csv -H
-
 ```
 
 <a name="authors"></a> 
