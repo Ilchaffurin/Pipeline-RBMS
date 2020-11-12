@@ -27,7 +27,7 @@ The pipeline uses several software like :
 
 #### The pipeline is organized as follows:  
 
-![alt text](/img/pipeline.png)
+![alt text](/img/schema-pipeline.png)
 
 <a name="req"></a> 
 
