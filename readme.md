@@ -162,4 +162,6 @@ The project was developped by :
 
 ## Project status 
 
-The parameters choise of the different sorfware are not defined yet and it could be modified. 
+1. The parameters choise of the different sorfware are not defined yet and it could be modified. 
+2. Post alignment processing: This step will include data clean-up operations to correct for technical biases: marking duplicates and recalibration of base quality scores.
+
