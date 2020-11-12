@@ -116,7 +116,7 @@ executor >  local (7)
 [a8/d9bdab] process > Index_STAR (Human)               [100%] 1 of 1 ✔
 [f2/f96b04] process > Index_BOWTIE (Human)             [100%] 1 of 1 ✔
 [-        ] process > Star (B2998_10_S6_R1_001)        -
-[fe/d28b0e] process > Bowtie2 (B2998_10_S6_R1_001)     [100%] 1 of 1, failed: 1 ✘
+[fe/d28b0e] process > Bowtie2 (B2998_10_S6_R1_001)     [100%] 1 of 1 ✔
 [-        ] process > Bcftools                         -
 [-        ] process > MultiQC                          -
 ```
