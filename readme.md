@@ -126,11 +126,11 @@ Succeeded   : 10
 
 By default, all the files are saved in the `./results` directory. In the directory you will find five different directories named as each process:  
 
-* FastQC directory for the quatilty control HTML files before and after trimming and cleaning 
-* trimmming directory for the fastq file(s) after trimming and cleaning  
-* mapping directory for the index and align directory for STAR and BOWTIE2 process 
-* multiQC directory for the HTML file for the final quality rapport 
-* bcftools directory with the vcf and cvs files 
+* FastQC for the HTML quatilty control files before and after trimming and cleaning 
+* trimmming for the fastq file(s) after trimming and cleaning  
+* mapping for the index and align directory for STAR and BOWTIE2 process 
+* multiQC for the HTML file for the final quality rapport 
+* bcftools with the vcf and cvs files for the variant calling process 
 
 #### Convert VCF files into CVS files 
 
