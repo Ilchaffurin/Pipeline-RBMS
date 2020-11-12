@@ -44,12 +44,6 @@ The pipeline is organised as follows  (imagen)
 
 ## Usage 
 
-##### To run the pipeline :
-
-```nextflow
-nextflow run pipeline.nf --threads 10 --input_dir 'path/to/*.fastq' --genome_ref 'path/to/file.fasta'
-```
-
 ##### To run the pipeline help message : 
 
 ```nextflow
@@ -83,7 +77,13 @@ help message:
     --help           Print help message
 ```
 
+##### To run the pipeline :
 
+```nextflow
+nextflow run pipeline.nf --threads 10 --input_dir 'path/to/*.fastq' --genome_ref 'path/to/file.fasta'
+```
+
+####
 
 <a name="authors"></a> 
 
@@ -96,8 +96,8 @@ The project was developped by :
 * Morgane DES LIGNERIS
 * Isis LORENZO-COLINA
 
-
 <a name="project"></a> 
 
 ## Project status 
+
 
