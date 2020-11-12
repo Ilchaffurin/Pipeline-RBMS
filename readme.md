@@ -162,4 +162,4 @@ The project was developped by :
 
 ## Project status 
 
-
+The parameters choise of the different sorfware are not defined yet and it could be modified. 
