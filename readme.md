@@ -138,7 +138,7 @@ If you want to change the files separators, you can modify the `;` (semicolon) i
 
 The command concerned can be found in the `variant calling` part with the name `process Bcftools` 
 
-* In the following example the separators ; (semicolon) were replaced by , (comma)
+* In the following example the separators `;` (semicolon) were replaced by `,` (comma)
 
 ```
 bcftools query -f '%CHROM,%POS,%ID,%REF,%ALT,%QUAL,%FILTER\n' ${file_id}${data_type}calls.vfc -o ${file_id}${data_type}_calls.csv -H
