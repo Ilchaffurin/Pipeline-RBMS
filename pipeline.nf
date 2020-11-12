@@ -17,7 +17,7 @@ def helpMessage() {
     Usage:
 
     The typical command for running the pipeline is as follows:
-      nextflow run pipeline.nf --input_dir 'path/to/fasta/*.fastq' --genome_ref 'path/to/genome/file.fasta'
+      nextflow run pipeline.nf --threads 10 --input_dir 'path/to/*.fastq' --genome_ref 'path/to/file.fasta'
 
     Required arguments:
       --input_dir      Directory for fastq files
@@ -428,9 +428,9 @@ process Bcftools {
 
         script:
         """
-        bcftools mpileup -f ${fasta} ${reads} | bcftools call -mv -Ob -o ${file_id}${data_type}calls.vcf 
-        bcftools view -i '%QUAL>=20' ${file_id}${data_type}calls.vcf -o ${file_id}${data_type}calls_view.vcf
-        bcftools query -f '%CHROM;%POS;%ID;%REF;%ALT;%QUAL;%FILTER\n' ${file_id}${data_type}calls.vcf -o ${file_id}${data_type}_calls.csv -H
+        bcftools mpileup -f ${fasta} ${reads} | bcftools call -mv -Ob -o ${file_id}${data_type}calls.vfc 
+        bcftools view -i '%QUAL>=20' ${file_id}${data_type}calls.vfc -o ${file_id}${data_type}calls_view.vfc
+        bcftools query -f '%CHROM;%POS;%ID;%REF;%ALT;%QUAL;%FILTER\n' ${file_id}${data_type}calls.vfc -o ${file_id}${data_type}_calls.csv -H
         """
 }
 
