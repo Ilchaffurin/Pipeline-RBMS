@@ -37,7 +37,7 @@ The pipeline uses several software like :
 
 [Miniconda](https://docs.conda.io/en/latest/miniconda.html#linux-installers)
 
-##### Create the environment from EnvPipeline.yml file : 
+##### Create the environment from EnvPipeline.yml file: 
 ``` conda env create -f EnvPipeline.yml ```
 
 ##### Activate the environement EnvPipeline 
@@ -47,13 +47,13 @@ The pipeline uses several software like :
 
 ## Usage 
 
-##### To run the pipeline help message : 
+#### To run the pipeline help message: 
 
 ```nextflow
 nextflow run pipeline.nf --help 
 ```
 
-##### Help message : 
+#### Help message: 
 ```
 Required arguments:
     --input_dir      Directory for fastq files
@@ -80,37 +80,38 @@ help message:
     --help           Print help message
 ```
 
-##### To run the pipeline :
+#### To run the pipeline:
 
 ```nextflow
 nextflow run pipeline.nf --threads 10 --input_dir 'path/to/*.fastq' --genome_ref 'path/to/file.fasta'
 ```
 
-##### Execution example the
+#### Execution example: 
 
 ```nextflow
  nextflow run pipeline.nf --input_dir '/data/home/mdes-ligneris/M1/S1/Projet1/data/B2998_10_S6_R1_001.fastq' --genome_ref /data/home/mdes-ligneris/M1/S1/Projet1/data/Human.fa --outdir resultsCBoth
  ```
 
-##### After execution the script will output all the process : 
+#### After execution the script will output all the process : 
 
 
-##### Where are the outputs files ? 
+#### Where are the outputs files ? 
 
 By default, all the files are saved in the `./results` directory. In the directory you will find five different file with the name of each process ()
 
-##### Convert VCF files into CVS files 
+#### Convert VCF files into CVS files 
 
 If you want to change the files separators, you can modify the `;` in the string and insert the separator of interest 
 
 Example: 
+
 * In the script the separators are indicated by `;` (semicolon)
 
 ```
 bcftools query -f '%CHROM;%POS;%ID;%REF;%ALT;%QUAL;%FILTER\n' ${file_id}${data_type}calls.vfc -o ${file_id}${data_type}_calls.csv -H
 ```
 
-* In the example the separators are indicated by `,` (comma)
+* In the following example the separators are indicated by `,` (comma)
 
 ```
 bcftools query -f '%CHROM,%POS,%ID,%REF,%ALT,%QUAL,%FILTER\n' ${file_id}${data_type}calls.vfc -o ${file_id}${data_type}_calls.csv -H
