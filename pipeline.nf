@@ -60,6 +60,7 @@ params.genome_ref = false
 params.skipFastqc = false
 params.skipMultiqc = false
 params.skipTrimming = false
+params.skipMapping = false
 params.onlySTAR = false
 params.onlyBowtie2 = false
 params.outdir = 'results'
@@ -345,6 +346,7 @@ else {
         --readFilesIn ${reads} \
         --outFileNamePrefix ./${file_id} \
         --outSAMtype BAM SortedByCoordinate
+        samtools index -@ ${cpus} -b ${file_id}*.out.bam ${file_id}_star.bam.bai
         """
     }
 }
@@ -388,8 +390,9 @@ else {
           -x ${index_id} \
           -U ${reads} \
           -S ${file_id}_bowtie2.sam 
-          samtools view -bS ${file_id}_bowtie2.sam > ${file_id}_bowtie2.bam
-          samtools sort -@ 20 -O BAM -o ${file_id}_bowtie2_sorted.bam ${file_id}_bowtie2.bam
+          samtools view -bS ${file_id}_bowtie2.sam -o ${file_id}_bowtie2.bam
+          samtools sort -@ ${cpus} -O BAM -o ${file_id}_bowtie2_sorted.bam ${file_id}_bowtie2.bam
+          samtools index -@ ${cpus} -b ${file_id}_bowtie2_sorted.bam ${file_id}_bowtie2_sorted.bam.bai
           """
   }
 }
@@ -403,21 +406,21 @@ else {
 * Channel is both mapper were used.
 */
 if (!params.onlySTAR && !params.onlyBowtie2){
-  bowtie2_bam_files.concat(star_bam_files).set { bam_files }
+  bowtie2_bam_files.concat(star_bam_files).into { bam_files ; bam_files_to_bai }
 }
 /* 
 * Set the sorted bam file to only the ones from the STAR alignment if this 
 * option is chosen. 
 */
 if (params.onlySTAR){
-  star_bam_files.set { bam_files }
+  star_bam_files.into { bam_files ; bam_files_to_bai }
 }
 /* 
 * Set the sorted bam file to only the ones from the Bowtie2 alignment if this 
 * option is chosen. 
 */
 if (params.onlyBowtie2){
-  bowtie2_bam_files.set { bam_files }
+  bowtie2_bam_files.into { bam_files ; bam_files_to_bai }
 }
 
 /* 
