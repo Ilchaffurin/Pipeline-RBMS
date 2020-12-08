@@ -23,16 +23,20 @@ def helpMessage() {
       --input_dir      Directory for fastq files
       --genome_ref     Full path to directory containing reference genome fasta file
 
+    Miniconda3 path option:
+      --miniconda3     Full path to directory containing miniconda3 (exemple : '/data/home/.../miniconda3')
+
     QC option:
       --skipFastqc     Skip reads quality control step (default: activated).
       --skipMultiqc    Skip merging tools reports suitable with multiqc (default: activated)
 
     Trimming option:
-      --skipTrmming    Skip trimming step (default: activated).
+      --skipTrimming   Skip trimming step (default: activated).
 
     Mapping option:
       --onlySTAR       Only using STAR mapper (default: STAR and Bowtie2).
       --onlyBowtie2    Only using Bowtie2 mapper (default: STAR and Bowtie2).
+      --skipMapping    Skip mapping step (default: activated).
 
     Save option:
       --outdir         Specify where to save the output from the nextflow run (default: "./results/")
@@ -59,6 +63,7 @@ params.skipTrimming = false
 params.onlySTAR = false
 params.onlyBowtie2 = false
 params.outdir = 'results'
+params.miniconda3= '~/miniconda3'
 params.threads = 1
 
 // Show help message
@@ -97,7 +102,7 @@ if (params.skipTrimming){
 else {
   log.info "Trimming                 : Yes"
 }
-if (!params.onlySTAR && !params.onlyBowtie2){
+if (!params.onlySTAR && !params.onlyBowtie2 && !params.skipMapping){
   log.info "Mapper                   : STAR ans Bowtie2"
 }
 if (params.onlySTAR){
@@ -105,6 +110,9 @@ if (params.onlySTAR){
 }
 if (params.onlyBowtie2){
   log.info "Mapper                   : Bowtie2"
+}
+if (params.skipMapping){
+  log.info "Mapper                   : Skipped"
 }
 log.info "".padRight(120,'-')
 
@@ -183,7 +191,7 @@ else {
         script:
         """
         trimmomatic SE -threads ${cpus} -phred33 ${reads} ${file_id}_trim.fastq \
-        ILLUMINACLIP:~/miniconda3/envs/EnvPipeline/share/trimmomatic-0.39-1/adapters/TruSeq3-SE.fa:2:30:7 \
+        ILLUMINACLIP:${params.miniconda3}/envs/EnvPipeline/share/trimmomatic-0.39-1/adapters/TruSeq3-SE.fa:2:30:7 \
         LEADING:30 TRAILING:30 SLIDINGWINDOW:4:15 AVGQUAL:30 MINLEN:8
         """
     }
@@ -238,7 +246,7 @@ else {
 /* 
 * Initialization of default empty values if the only the mapper Bowtie2 is used.
 */
-if (params.onlyBowtie2){
+if (params.onlyBowtie2 || params.skipMapping){
     Channel
         .empty()
         .set { fasta_2indexing_STAR }
@@ -271,7 +279,7 @@ else {
 /* 
 * Initialization of default empty values if the only the mapper STAR is used.
 */
-if (params.onlySTAR){
+if (params.onlySTAR || params.skipMapping){
     Channel
         .empty()
         .set { fasta_2indexing_BOWTIE }
@@ -306,7 +314,7 @@ else {
 /* 
 * Initialization of default empty values if the only the mapper Bowtie2 is used.
 */
-if (params.onlyBowtie2){
+if (params.onlyBowtie2 || params.skipMapping){
   Channel
       .empty()
       .into { star_bam_files ; star_mapping_report}
@@ -344,7 +352,7 @@ else {
 /* 
 * Initialization of default empty values if the only the mapper STAR is used.
 */
-if (params.onlySTAR){
+if (params.onlySTAR || params.skipMapping){
   Channel
                .empty()
                .into { bowtie2_bam_files ; bowtie2_mapping_report}
@@ -411,27 +419,33 @@ if (params.onlySTAR){
 if (params.onlyBowtie2){
   bowtie2_bam_files.set { bam_files }
 }
-/*
-* Variant calling process that write the results into .cvs files
-*/
-process Bcftools {
-    label "bcftools"
-        tag "$file_id"
-        publishDir "${params.outdir}/bcftools/$file_id", mode: 'copy'
- 
-        input:
-        set fasta_id, file(fasta) from fasta_2variantCalling.collect()
-        set file_id, data_type, file(reads) from bam_files
-        
-        output:
-        set file_id, data_type, "${file_id}${data_type}*" into variant_calling_file
 
-        script:
-        """
-        bcftools mpileup -f ${fasta} ${reads} | bcftools call -mv -Ob -o ${file_id}${data_type}calls.vfc 
-        bcftools view -i '%QUAL>=20' ${file_id}${data_type}calls.vfc -o ${file_id}${data_type}calls_view.vfc
-        bcftools query -f '%CHROM;%POS;%ID;%REF;%ALT;%QUAL;%FILTER\n' ${file_id}${data_type}calls.vfc -o ${file_id}${data_type}_calls.csv -H
-        """
+/* 
+* Variant Calling if mapping step is not skipped.
+*/
+if (!params.skipMapping){
+  /*
+  * Variant calling process that write the results into .cvs files
+  */
+  process Bcftools {
+      label "bcftools"
+          tag "$file_id"
+          publishDir "${params.outdir}/bcftools/$file_id", mode: 'copy'
+  
+          input:
+          set fasta_id, file(fasta) from fasta_2variantCalling.collect()
+          set file_id, data_type, file(reads) from bam_files
+          
+          output:
+          set file_id, data_type, "${file_id}${data_type}*" into variant_calling_file
+
+          script:
+          """
+          bcftools mpileup -f ${fasta} ${reads} | bcftools call -mv -Ob -o ${file_id}${data_type}calls.vfc 
+          bcftools view -i '%QUAL>=20' ${file_id}${data_type}calls.vfc -o ${file_id}${data_type}calls_view.vfc
+          bcftools query -f '%CHROM;%POS;%ID;%REF;%ALT;%QUAL;%FILTER\n' ${file_id}${data_type}calls.vfc -o ${file_id}${data_type}_calls.csv -H
+          """
+  }
 }
 
 ///////////////////////////////////////////////////////////////////////////////
