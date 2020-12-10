@@ -104,7 +104,7 @@ else {
   log.info "Trimming                 : Yes"
 }
 if (!params.onlySTAR && !params.onlyBowtie2 && !params.skipMapping){
-  log.info "Mapper                   : STAR ans Bowtie2"
+  log.info "Mapper                   : STAR and Bowtie2"
 }
 if (params.onlySTAR){
   log.info "Mapper                   : STAR"
@@ -187,13 +187,14 @@ else {
         set file_id, file(reads) from fastqc_files_2trim
 
         output:
-        set file_id, "*.fastq" into fastq_trim_files, fastq_trim_files2, fastq_trim_files_2QC, trimming_report
+        set file_id, "*.fastq" into fastq_trim_files, fastq_trim_files2, fastq_trim_files_2QC
+        file "*trim.fastq.stats.log" into trimming_report
 
         script:
         """
         trimmomatic SE -threads ${cpus} -phred33 ${reads} ${file_id}_trim.fastq \
         ILLUMINACLIP:${params.miniconda3}/envs/EnvPipeline/share/trimmomatic-0.39-1/adapters/TruSeq3-SE.fa:2:30:7 \
-        LEADING:30 TRAILING:30 SLIDINGWINDOW:4:15 AVGQUAL:30 MINLEN:8
+        LEADING:30 TRAILING:30 SLIDINGWINDOW:4:15 AVGQUAL:30 MINLEN:8 2> ${file_id}_trim.fastq.stats.log
         """
     }
 }
@@ -299,11 +300,11 @@ else {
 
             output:
             file "*.index*" into index_files_BOWTIE
-            file "*_report.txt" into indexing_report
+            file "*stats.log" into indexing_report
 
             script:
             """
-            bowtie2-build ${fasta} ${file_id}.index &> ${fasta.baseName}_bowtie2_report.txt
+            bowtie2-build ${fasta} ${file_id}.index 2> ${fasta.baseName}_bowtie2_stats.log
             """
   }
 }
@@ -335,22 +336,24 @@ else {
 
         output:
         set file_id, val(data_type), "*out.bam" into star_bam_files
-        file "*" into star_mapping_report
+        file "*Log.final.out" into star_mapping_report 
 
         script:
         data_type="_star_"
         """
         STAR --runThreadN ${cpus} \
         --runMode alignReads \
+        --outFilterMismatchNoverLmax 0.027 \
         --genomeDir ./index/ \
         --readFilesIn ${reads} \
         --outFileNamePrefix ./${file_id} \
-        --outSAMtype BAM SortedByCoordinate
-        samtools index -@ ${cpus} -b ${file_id}*.out.bam ${file_id}_star.bam.bai
+        --outSAMtype BAM SortedByCoordinate 
+        samtools index -@ ${cpus} -b ${file_id}*.out.bam ${file_id}_star.bam.bai 
+        mv ${file_id}Log.final.out ${file_id}_star.statsLog.final.out
         """
     }
 }
-
+ 
 /* 
 * Initialization of default empty values if the only the mapper STAR is used.
 */
@@ -374,7 +377,7 @@ else {
 
           output:
           set file_id, val(data_type), "*_sorted.bam" into bowtie2_bam_files
-          file "*" into bowtie2_mapping_report
+          file "*bowtie2.stats.log" into bowtie2_mapping_report
 
           script:
           data_type="_bowtie2_"
@@ -386,10 +389,13 @@ else {
           }
           """
           bowtie2 -p ${cpus} \
-          --very-sensitive \
+          -D 20 -R 2 -N 1 -L 20 -i S,1,0.50 \
           -x ${index_id} \
           -U ${reads} \
-          -S ${file_id}_bowtie2.sam 
+          -S ${file_id}_bowtie2_tmp.sam 2> ${file_id}_bowtie2.stats.log
+          
+          grep -e "^@" -e 'XM:i:[012]' ${file_id}_bowtie2_tmp.sam > ${file_id}_bowtie2.sam
+
           samtools view -bS ${file_id}_bowtie2.sam -o ${file_id}_bowtie2.bam
           samtools sort -@ ${cpus} -O BAM -o ${file_id}_bowtie2_sorted.bam ${file_id}_bowtie2.bam
           samtools index -@ ${cpus} -b ${file_id}_bowtie2_sorted.bam ${file_id}_bowtie2_sorted.bam.bai
@@ -441,16 +447,22 @@ if (!params.skipMapping){
           
           output:
           set file_id, data_type, "${file_id}${data_type}*" into variant_calling_file
+          file "*.stats.txt" into bcftools_report , bcftools_report2
 
           script:
           """
           bcftools mpileup -f ${fasta} ${reads} | bcftools call -mv -Ob -o ${file_id}${data_type}calls.vcf 
+          bcftools stats -F ${fasta} ${file_id}${data_type}calls.vcf > ${file_id}${data_type}calls.stats.txt 
+
           bcftools view -i '%QUAL>=20' ${file_id}${data_type}calls.vcf -o ${file_id}${data_type}calls_view.vcf
+          bcftools stats -F ${fasta} ${file_id}${data_type}calls_view.vcf > ${file_id}${data_type}calls_view.stats.txt 
+
           bcftools query -f '%CHROM;%POS;%ID;%REF;%ALT;%QUAL;%FILTER\n' ${file_id}${data_type}calls.vcf -o ${file_id}${data_type}_calls.csv -H
           """
   }
 }
 
+bcftools_report2.view()
 ///////////////////////////////////////////////////////////////////////////////
 /* --                      MERGE ALL STEPS REPORTS                        -- */
 ///////////////////////////////////////////////////////////////////////////////
@@ -468,6 +480,7 @@ process MultiQC {
       file report_trim from trimming_report.collect().ifEmpty([])
       file report_star from star_mapping_report.collect().ifEmpty([])
       file report_mapping from bowtie2_mapping_report.collect().ifEmpty([])
+      file report_bcftools from bcftools_report.collect().ifEmpty([])
 
       output:
       file "*multiqc_*" into multiqc_report
@@ -477,7 +490,6 @@ process MultiQC {
 
       script:
       """
-      multiqc -f . \\
-      -m fastqc -m trimmomatic -m star -m bowtie2
+      multiqc . 
       """
 }
