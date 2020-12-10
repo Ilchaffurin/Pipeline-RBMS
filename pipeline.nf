@@ -340,6 +340,21 @@ else {
 
         script:
         data_type="_star_"
+
+        /*
+        Star takes a STAR index and a set of sequencing read files as input (files in fastQ format) and generates a set of files in SAM format as output. 
+        --runThreads : Number Of Threads
+        --runMode : genomeGenerates option which directs STAR to run genome indices generation job
+        --genomeDir : specifies path to the directory
+        --readFilesIn /path to read1 : indicates the path and the files containing the sequences to be mapped (i.e. RNA-seq FastQ files). 
+        --outFileNamePrefix : by default, we have : ./ 
+        The string indicates the output files name prefix (including pull or relative path).
+        --outSAMtype : by default, we have : SAM ; the string indicates the type of SAM/BAM output
+        BAM : 1st word : the output is a file in BAM format without sorting 
+        SortedByCoordinate :  2nd word : this option allocates extra memory for sorting, which can be specified by -limitBAMtoRAM
+        */
+
+
         """
         STAR --runThreadN ${cpus} \
         --runMode alignReads \
@@ -387,6 +402,24 @@ else {
               index_id = ( index_file =~ /(.*)\.1\.bt2/)[0][1]
             }
           }
+          
+          /*
+           bowtie2 takes a Bowtie 2 index and a set of sequencing read files and outputs a set of alignments in SAM format.
+           -P number of threads
+           -x index file
+           -U reads files
+           -S output file in sam format
+           -D number of seeding attempt that can fail before bowtie2 moves on another seed : 20 allow us to be very sensitive , but we can reduce execution time by lowering this number -> 15
+           -R maximum number of times bowtie2 will try to "re-seed" a read with repetitive seeds ( for more information on reads with repetitive seeds , look for the manual of bowtie2). We use the default value here. 
+           -N Number of missmatchs allowed in a seed alignement 
+           -L length od the seeds substrings during the multiseed alignement : small value make alignement more sensitive but slower. default is 22 , we choose 20 to be more sensitive.
+           -i function used to interval between seeds substrings during the multistring alignement. S,1,0.50 means : f(x)=1+0.5*sqrt(x) where x is the read size. this value allow for a lot of seeds substring to be used during multiseeds alignement. We can reduce the execution time (while bbeing less sensitive) bye choosing another function for exemple : S,1,1.15
+          
+          The grep command allows to select reads only aligned with 0, 1 ou 2 mismatches  
+
+          Samtools allows to successively convert sam files into bam files, sort the bam files and index the sorted bam files
+          */
+
           """
           bowtie2 -p ${cpus} \
           -D 20 -R 2 -N 1 -L 20 -i S,1,0.50 \
@@ -447,22 +480,24 @@ if (!params.skipMapping){
           
           output:
           set file_id, data_type, "${file_id}${data_type}*" into variant_calling_file
-          file "*.stats.txt" into bcftools_report , bcftools_report2
+          file "*.stats.txt" into bcftools_report 
 
           script:
+          /*
+          bcftools mpileup takes the aligments and the reference genome and generate a genotype likehoods at each genomic position, -f is the reference genome in fasta format file 
+          bcftools call takes the genotype likehoods and generate the cause of the actual variance. The output are goint to be the just the regions of the aligment which are different to our genome. -m tells bcftool to use the default polling method. -v output the variants sites only. -Ou output type u, which is the bcf format          
+          bcftools stats Parse the bcf file and produce text file stats which is suitable for machine processing. -F faidx indexed reference sequence file to determine INDEL context
+          bcftools view View, subset and filter bcf file by quality. -i include the variants, here with a threshole equal or more than 20. We only have variants that passed the filter. 
+          bcftools Query is a tools that allow you to re-format the vcf file into a text file for analysis, in this case a cvs file. -H print header. 
+          */
           """
-          bcftools mpileup -f ${fasta} ${reads} | bcftools call -mv -Ob -o ${file_id}${data_type}calls.vcf 
-          bcftools stats -F ${fasta} ${file_id}${data_type}calls.vcf > ${file_id}${data_type}calls.stats.txt 
-
-          bcftools view -i '%QUAL>=20' ${file_id}${data_type}calls.vcf -o ${file_id}${data_type}calls_view.vcf
-          bcftools stats -F ${fasta} ${file_id}${data_type}calls_view.vcf > ${file_id}${data_type}calls_view.stats.txt 
-
-          bcftools query -f '%CHROM;%POS;%ID;%REF;%ALT;%QUAL;%FILTER\n' ${file_id}${data_type}calls.vcf -o ${file_id}${data_type}_calls.csv -H
+          bcftools mpileup -f ${fasta} ${reads} | bcftools call -mv -Ou -o ${file_id}${data_type}calls.bcf 
+          bcftools stats -F ${fasta} ${file_id}${data_type}calls.bcf > ${file_id}${data_type}calls.stats.txt 
+          bcftools query -f '%CHROM;%POS;%ID;%REF;%ALT;%QUAL;%FILTER\n' ${file_id}${data_type}calls.bcf -o ${file_id}${data_type}_calls.csv -H
           """
   }
 }
 
-bcftools_report2.view()
 ///////////////////////////////////////////////////////////////////////////////
 /* --                      MERGE ALL STEPS REPORTS                        -- */
 ///////////////////////////////////////////////////////////////////////////////
