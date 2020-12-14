@@ -22,6 +22,7 @@ def helpMessage() {
     Required arguments:
       --input_dir      Directory for fastq files
       --genome_ref     Full path to directory containing reference genome fasta file
+      --dp             Read length option (default: 50)
 
     Miniconda3 path option:
       --miniconda3     Full path to directory containing miniconda3 (exemple : '/data/home/.../miniconda3')
@@ -66,56 +67,15 @@ params.onlyBowtie2 = false
 params.outdir = 'results'
 params.miniconda3= '~/miniconda3'
 params.threads = 1
+params.bp = '50'
+max50 = 0.04
+max75 = 0.027
 
 // Show help message
 if (params.help) {
     helpMessage()
     exit 0
 }
-
-///////////////////////////////////////////////////////////////////////////////
-/* --                          HEADER LOG INFO                            -- */
-///////////////////////////////////////////////////////////////////////////////
-
-/* 
-* Writes all information according to the options at the beginning of the run.
-*/
-log.info "".padRight(120,'-')
-log.info "Fastq file(s) from Path  : ${params.input_dir}"
-log.info "Genome fasta file        : ${params.genome_ref}"
-log.info "Output                   : ${params.outdir}"
-log.info "Number of threads        : ${params.threads}"
-if (params.skipFastqc){ 
-  log.info "Reads QC                 : Skipped"
-} 
-else {
-  log.info "Reads QC                 : Yes"
-}
-if (params.skipMultiqc){ 
-  log.info "Merging Reports          : Skipped"
-}
-else {
-  log.info "Merging Reports          : Yes"
-}
-if (params.skipTrimming){
-  log.info "Trimming                 : Skipped"
-}
-else {
-  log.info "Trimming                 : Yes"
-}
-if (!params.onlySTAR && !params.onlyBowtie2 && !params.skipMapping){
-  log.info "Mapper                   : STAR and Bowtie2"
-}
-if (params.onlySTAR){
-  log.info "Mapper                   : STAR"
-}
-if (params.onlyBowtie2){
-  log.info "Mapper                   : Bowtie2"
-}
-if (params.skipMapping){
-  log.info "Mapper                   : Skipped"
-}
-log.info "".padRight(120,'-')
 
 ///////////////////////////////////////////////////////////////////////////////
 /* --                          VALIDATE INPUTS                            -- */
@@ -158,6 +118,62 @@ else {
 if (params.threads){
     cpus = "${params.threads}"
 }
+
+/* 
+* Initialization of the max number of mismatches relative to the read length to be used.
+  Needs to be set for the option --outFilterMismatchNoverLmax in Star.
+        if 75bp and 2 mismatch max : 0.027 
+        if 50bp and 2 musmatch max : 0.04
+*/
+if (params.bp){
+  lmax = 2/(params.bp.toInteger())
+}
+
+///////////////////////////////////////////////////////////////////////////////
+/* --                          HEADER LOG INFO                            -- */
+///////////////////////////////////////////////////////////////////////////////
+
+/* 
+* Writes all information according to the options at the beginning of the run.
+*/
+log.info "".padRight(120,'-')
+log.info "Fastq file(s) from Path  : ${params.input_dir}"
+log.info "Genome fasta file        : ${params.genome_ref}"
+log.info "Output                   : ${params.outdir}"
+log.info "Number of threads        : ${params.threads}"
+log.info "Lmax                     : ${lmax} "
+if (params.skipFastqc){ 
+  log.info "Reads QC                 : Skipped"
+} 
+else {
+  log.info "Reads QC                 : Yes"
+}
+if (params.skipMultiqc){ 
+  log.info "Merging Reports          : Skipped"
+}
+else {
+  log.info "Merging Reports          : Yes"
+}
+if (params.skipTrimming){
+  log.info "Trimming                 : Skipped"
+}
+else {
+  log.info "Trimming                 : Yes"
+}
+if (!params.onlySTAR && !params.onlyBowtie2 && !params.skipMapping){
+  log.info "Mapper                   : STAR and Bowtie2"
+}
+if (params.onlySTAR){
+  log.info "Mapper                   : STAR"
+}
+if (params.onlyBowtie2){
+  log.info "Mapper                   : Bowtie2"
+}
+if (params.skipMapping){
+  log.info "Mapper                   : Skipped"
+}
+log.info "".padRight(120,'-')
+
 
 ///////////////////////////////////////////////////////////////////////////////
 /* --                       TRIMMING / CLEANING READS                     -- */
@@ -340,7 +356,7 @@ else {
 
         script:
         data_type="_star_"
-
+        
         /*
         Star takes a STAR index and a set of sequencing read files as input (files in fastQ format) and generates a set of files in SAM format as output. 
         --runThreads : Number Of Threads
@@ -352,13 +368,15 @@ else {
         --outSAMtype : by default, we have : SAM ; the string indicates the type of SAM/BAM output
         BAM : 1st word : the output is a file in BAM format without sorting 
         SortedByCoordinate :  2nd word : this option allocates extra memory for sorting, which can be specified by -limitBAMtoRAM
+        --outFilterMismatchNoverLmax : max number of mismatches relative to the read length
+        if 75bp and we want 2 mismatch max : 0.027 
+        if 50bp and we want 2 mismatch max : 0.04
         */
-
 
         """
         STAR --runThreadN ${cpus} \
         --runMode alignReads \
-        --outFilterMismatchNoverLmax 0.027 \
+        --outFilterMismatchNoverLmax ${lmax} \
         --genomeDir ./index/ \
         --readFilesIn ${reads} \
         --outFileNamePrefix ./${file_id} \
@@ -484,16 +502,29 @@ if (!params.skipMapping){
 
           script:
           /*
-          bcftools mpileup takes the aligments and the reference genome and generate a genotype likehoods at each genomic position, -f is the reference genome in fasta format file 
-          bcftools call takes the genotype likehoods and generate the cause of the actual variance. The output are goint to be the just the regions of the aligment which are different to our genome. -m tells bcftool to use the default polling method. -v output the variants sites only. -Ou output type u, which is the bcf format          
-          bcftools stats Parse the bcf file and produce text file stats which is suitable for machine processing. -F faidx indexed reference sequence file to determine INDEL context
-          bcftools view View, subset and filter bcf file by quality. -i include the variants, here with a threshole equal or more than 20. We only have variants that passed the filter. 
-          bcftools Query is a tools that allow you to re-format the vcf file into a text file for analysis, in this case a cvs file. -H print header. 
+          bcftools mpileup takes the aligments and the reference genome and generate a genotype likehoods at each genomic position
+          -f is the reference genome in fasta format file 
+          --no-BAQ; BAQ is the Phred-scaled probability of a read base being misaligned. 
+          Applying this option greatly helps to reduce false SNPs caused by misalignments.
+
+          bcftools call takes the genotype likehoods and generate the cause of the actual variance. 
+          The output are goint to be the just the regions of the aligment which are different to our genome. 
+          -m tells bcftool to use the default polling method. 
+          -v output the variants sites only. -Ou output type u, which is the bcf format          
+          
+          bcftools stats Parse the bcf file and produce text file stats which is suitable for machine processing. 
+          -F faidx indexed reference sequence file to determine INDEL context
+          
+          bcftools Query is a tools that allow you to view, subset and filter bcf file by quality. 
+          -i include the variants, here with a threshole equal or more than 20. We only have variants that passed the filter. 
+          It also re-format the vcf file into a text file for analysis, in this case a cvs file. 
+          -H print header. 
           */
           """
-          bcftools mpileup -f ${fasta} ${reads} | bcftools call -mv -Ou -o ${file_id}${data_type}calls.bcf 
+          bcftools mpileup --no-BAQ -f ${fasta} ${reads} > ${file_id}${data_type}_pileup.vcf 
+          bcftools call -mv -Ou -o ${file_id}${data_type}calls.bcf ${file_id}${data_type}_pileup.vcf 
           bcftools stats -F ${fasta} ${file_id}${data_type}calls.bcf > ${file_id}${data_type}calls.stats.txt 
-          bcftools query -f '%CHROM;%POS;%ID;%REF;%ALT;%QUAL;%FILTER\n' ${file_id}${data_type}calls.bcf -o ${file_id}${data_type}_calls.csv -H
+          bcftools query -i 'QUAL>20 && DP>20' -f '%CHROM;%POS;%ID;%REF;%ALT;%QUAL;%FILTER\n' ${file_id}${data_type}calls.bcf -o ${file_id}${data_type}_calls.csv -H
           """
   }
 }
