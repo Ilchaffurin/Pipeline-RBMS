@@ -113,19 +113,19 @@ Merging Reports          : Yes
 Trimming                 : Yes
 Mapper                   : STAR and Bowtie2
 ------------------------------------------------------------------------------------------------------------------------
-executor >  local (10)
-[78/4fd5f1] process > Trimmomatic (B2998_10_S6_R1_001) [100%] 1 of 1 ✔
-[fa/ff2082] process > Fastqc (B2998_10_S6_R1_001)      [100%] 2 of 2 ✔
-[c7/868151] process > Index_STAR (Human)               [100%] 1 of 1 ✔
-[a8/ca791c] process > Index_BOWTIE (Human)             [100%] 1 of 1 ✔
-[bc/6ba821] process > Star (B2998_10_S6_R1_001)        [100%] 1 of 1 ✔
-[0f/edd7f8] process > Bowtie2 (B2998_10_S6_R1_001)     [100%] 1 of 1 ✔
-[77/8cec17] process > Bcftools (B2998_10_S6_R1_001)    [100%] 2 of 2 ✔
-[98/4f141a] process > MultiQC                          [100%] 1 of 1 ✔
-Completed at: 12-Nov-2020 16:58:14
-Duration    : 9m 48s
-CPU hours   : 0.4
-Succeeded   : 10
+executor >  local (45)
+[8b/acc838] process > Trimmomatic (B3199_10_S8_R1_001) [100%] 6 of 6 ✔
+[a5/b13d01] process > Fastqc (B3199_6_S7_R1_001)       [100%] 12 of 12 ✔
+[d6/6b19d5] process > Index_STAR (Human)               [100%] 1 of 1 ✔
+[d9/627d77] process > Index_BOWTIE (Human)             [100%] 1 of 1 ✔
+[80/7f03e2] process > Star (B3199_6_S7_R1_001)         [100%] 6 of 6 ✔
+[f4/f7bb8b] process > Bowtie2 (B3446_6_S9_R1_001)      [100%] 6 of 6 ✔
+[72/bfacac] process > Bcftools (B3446_6_S9_R1_001)     [100%] 12 of 12 ✔
+[69/cb74f1] process > MultiQC                          [100%] 1 of 1 ✔
+Completed at: 15-Dec-2020 19:44:22
+Duration    : 49m 29s
+CPU hours   : 11.2
+Succeeded   : 45
 ```
 
 #### Where are the outputs files ? 
