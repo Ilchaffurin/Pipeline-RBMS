@@ -122,8 +122,8 @@ if (params.threads){
 /* 
 * Initialization of the max number of mismatches relative to the read length to be used.
   Needs to be set for the option --outFilterMismatchNoverLmax in Star.
-        if 75bp and 2 mismatch max : 0.027 
-        if 50bp and 2 musmatch max : 0.04
+        if 75bp and 2 mismatch max : 2/75 = 0.027 
+        if 50bp and 2 musmatch max : 2/50 = 0.04
 */
 if (params.bp){
   lmax = 2/(params.bp.toInteger())
