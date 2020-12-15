@@ -17,7 +17,7 @@ def helpMessage() {
     Usage:
 
     The typical command for running the pipeline is as follows:
-      nextflow run pipeline.nf --threads 10 --input_dir 'path/to/*.fastq' --genome_ref 'path/to/file.fasta'
+      nextflow run pipeline.nf --threads 10 --input_dir 'path/to/*.fastq' --genome_ref 'path/to/file.fasta' --miniconda3 'path/to/miniconda3'
 
     Required arguments:
       --input_dir      Directory for fastq files
@@ -141,7 +141,7 @@ log.info "Fastq file(s) from Path  : ${params.input_dir}"
 log.info "Genome fasta file        : ${params.genome_ref}"
 log.info "Output                   : ${params.outdir}"
 log.info "Number of threads        : ${params.threads}"
-log.info "Lmax                     : ${lmax} "
+log.info "Fragment length          : ${params.bp} "
 if (params.skipFastqc){ 
   log.info "Reads QC                 : Skipped"
 } 

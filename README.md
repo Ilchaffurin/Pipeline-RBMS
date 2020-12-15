@@ -58,17 +58,22 @@ nextflow run pipeline.nf --help
 Required arguments:
     --input_dir      Directory for fastq files
     --genome_ref     Full path to directory containing reference genome fasta file
+    --dp             Read length option (default: 50)
+
+Miniconda3 path option:
+    --miniconda3     Full path to directory containing miniconda3 (exemple : '/data/home/.../miniconda3')
 
 QC option:
     --skipFastqc     Skip reads quality control step (default: activated).
     --skipMultiqc    Skip merging tools reports suitable with multiqc (default: activated)
 
 Trimming option:
-    --skipTrmming    Skip trimming step (default: activated).
+    --skipTrimming   Skip trimming step (default: activated).
 
 Mapping option:
     --onlySTAR       Only using STAR mapper (default: STAR and Bowtie2).
     --onlyBowtie2    Only using Bowtie2 mapper (default: STAR and Bowtie2).
+    --skipMapping    Skip mapping step (default: activated).
 
 Save option:
     --outdir         Specify where to save the output from the nextflow run (default: "./results/")
@@ -83,29 +88,30 @@ help message:
 #### To run the pipeline:
 
 ```nextflow
-nextflow run pipeline.nf --threads 10 --input_dir 'path/to/*.fastq' --genome_ref 'path/to/file.fasta'
+nextflow run pipeline.nf --threads 10 --input_dir 'path/to/*.fastq' --genome_ref 'path/to/file.fasta' --miniconda3 'path/to/miniconda3'
 ```
 
 #### Execution example: 
 
 ```nextflow
- nextflow run pipeline.nf --input_dir '/data/home/mdes-ligneris/M1/S1/Projet1/data/B2998_10_S6_R1_001.fastq' --genome_ref /data/home/mdes-ligneris/M1/S1/Projet1/data/Human.fa --threads 20
+  nextflow run pipeline.nf --threads 15 --input_dir '/data/home/mdes-ligneris/M1/S1/Projet1/data/B*.fastq' --genome_ref '/data/home/mdes-ligneris/M1/S1/Projet1/data/Human.fa' --miniconda3 '/data/home/mdes-ligneris/miniconda3' --bp 75
  ```
 
 #### After execution the script will output all the information process : 
 
 ```shell
 N E X T F L O W  ~  version 20.10.0
-Launching `pipeline.nf` [sharp_venter] - revision: d53c8822c5
+Launching `pipeline.nf` [awesome_kilby] - revision: 12da2a83da
 ------------------------------------------------------------------------------------------------------------------------
-Fastq file(s) from Path  : /data/home/mdes-ligneris/M1/S1/Projet1/data/B2998_10_S6_R1_001.fastq
+Fastq file(s) from Path  : /data/home/mdes-ligneris/M1/S1/Projet1/data/B*.fastq
 Genome fasta file        : /data/home/mdes-ligneris/M1/S1/Projet1/data/Human.fa
 Output                   : results
-Number of threads        : 20
+Number of threads        : 15
+Fragment length          : 75
 Reads QC                 : Yes
 Merging Reports          : Yes
 Trimming                 : Yes
-Mapper                   : STAR ans Bowtie2
+Mapper                   : STAR and Bowtie2
 ------------------------------------------------------------------------------------------------------------------------
 executor >  local (10)
 [78/4fd5f1] process > Trimmomatic (B2998_10_S6_R1_001) [100%] 1 of 1 ✔
@@ -126,8 +132,8 @@ Succeeded   : 10
 
 By default, all the files are saved in the `./results` directory. In the directory you will find five different directories named as each process:  
 
-* fastQC for the HTML quatity control files before and after trimming and cleaning 
-* trimming for the fastq file(s) after trimming and cleaning  
+* FastQC for the HTML quatity control files before and after trimming and cleaning 
+* Trimming for the fastq file(s) after trimming and cleaning  
 * mapping for the index and align directory for STAR and BOWTIE2 process 
 * multiQC for the HTML file for the final quality rapport 
 * bcftools with the vcf and cvs files for the variant calling process 
