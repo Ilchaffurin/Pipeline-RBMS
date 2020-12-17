@@ -152,6 +152,26 @@ bcftools query -f '%CHROM,%POS,%ID,%REF,%ALT,%QUAL,%FILTER\n' ${file_id}${data_t
 
 #### 
 
+#### Number of mismatches 
+
+By default, the number of mismatch autorized by the mappers is one. To change this parameter you need to replace the '1' by the number of mismatched wanted in ligne 130 for STAR parameters :
+```
+129  if (params.bp){
+130    lmax = 1/(params.bp.toInteger())
+131  }
+```
+
+and the '1' by the number of mismatched wanted behind '-N' in ligne 444 for bowtie2 :
+```
+443  bowtie2 -p ${cpus} \
+444            -D 20 -R 2 -N 1 -L 20 -i S,1,0.50 \
+445            -x ${index_id} \
+446            -U ${reads} \
+447            -S ${file_id}_bowtie2_tmp.sam 2> ${file_id}_bowtie2.stats.log
+```
+
+#### 
+
 <a name="authors"></a> 
 
 ## Authors 

@@ -28,16 +28,16 @@ def helpMessage() {
       --miniconda3     Full path to directory containing miniconda3 (exemple : '/data/home/.../miniconda3')
 
     QC option:
-      --skipFastqc     Skip reads quality control step (default: activated).
-      --skipMultiqc    Skip merging tools reports suitable with multiqc (default: activated)
+      --skipFastqc     Skip reads quality control step (default: not activated).
+      --skipMultiqc    Skip merging tools reports suitable with multiqc (default: not activated)
 
     Trimming option:
-      --skipTrimming   Skip trimming step (default: activated).
+      --skipTrimming   Skip trimming step (default: not activated).
 
     Mapping option:
       --onlySTAR       Only using STAR mapper (default: STAR and Bowtie2).
       --onlyBowtie2    Only using Bowtie2 mapper (default: STAR and Bowtie2).
-      --skipMapping    Skip mapping step (default: activated).
+      --skipMapping    Skip mapping step (default: not activated).
 
     Save option:
       --outdir         Specify where to save the output from the nextflow run (default: "./results/")
@@ -122,11 +122,12 @@ if (params.threads){
 /* 
 * Initialization of the max number of mismatches relative to the read length to be used.
   Needs to be set for the option --outFilterMismatchNoverLmax in Star.
-        if 75bp and 2 mismatch max : 2/75 = 0.027 
-        if 50bp and 2 musmatch max : 2/50 = 0.04
+        if 75bp and 1 mismatch max : 1/75 = 0.013 
+        if 50bp and 1 musmatch max : 1/50 = 0.02
+  The number 1 bellow need to be changed according to the number of mismatch wanted. 
 */
 if (params.bp){
-  lmax = 2/(params.bp.toInteger())
+  lmax = 1/(params.bp.toInteger())
 }
 
 ///////////////////////////////////////////////////////////////////////////////
